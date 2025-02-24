@@ -109,5 +109,23 @@ app.get('/api/user/:email', async (req, res) => {
   }
 });
 
+app.get('/api/verify-token', (req, res) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token Not Found' });
+  }
+
+  try {
+   
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).json({
+      message: 'Valid token',
+    });
+  } catch (error) {
+    res.status(401).json({ message: 'Expire Token' });
+  }
+});
+
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
