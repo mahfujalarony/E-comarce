@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+require('dotenv').config()
+
 
 const app = express();
 
@@ -39,25 +42,61 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Register Route
+
 app.post('/api/register', upload.single('photo'), async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const photoPath = req.file ? `/uploads/${req.file.filename}` : null;
 
-    const user = new User({
-      name,
-      email,
-      password, // In production, hash the password!
-      photoPath
-    });
+  
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
 
+    const user = new User({ name, email, password, photoPath });
     await user.save();
-    res.status(201).json({ message: 'User registered successfully', photoPath });
+
+    const token = jwt.sign({ user: user.name, email: user.email }, process.env.JWT_SECRET);
+
+    const userData = { name: user.name, email: user.email, photoPath: user.photoPath };
+    console.log('Response data:', { message: 'User registered successfully', token, user: userData });
+
+    res.status(201).json({
+      message: 'User registered successfully',
+      token,
+      user: userData 
+    });
   } catch (error) {
+    console.error('Error:', error);
     res.status(400).json({ message: 'Registration failed', error: error.message });
   }
 });
+
+app.post('/api/login', async(req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+
+    if(!user) {
+      return res.status(400).json({ message: 'NO user this email !'})
+    }
+
+    if (user.password !== password) {
+      return res.status(400).json({ message: 'Wrong password'});
+    }
+
+    res.status(200).json({ message: 'Login Successfull', 
+      user: { 
+      name: user.name, 
+      email: user.email, 
+      photoPath: user.photoPath 
+    }})
+  } catch(err) {
+    console.log('error: ', err.message);
+    res.status(500).json({ message: 'Faild Login', err: err.message })
+  }
+})
 
 // Get user photo by email
 app.get('/api/user/:email', async (req, res) => {

@@ -36,10 +36,15 @@ const Register = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/register', data);
       console.log(response.data);
-      alert('Registration successful!');
+
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      alert(response.data.message);
+
     } catch (error) {
       console.error(error);
-      alert('Registration failed!');
+      alert(error.response.data.message);
     }
   };
 
