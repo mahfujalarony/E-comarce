@@ -1,6 +1,7 @@
 // Register.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -96,6 +97,7 @@ const Register = () => {
 
         <button type="submit">Register</button>
       </form>
+      <Link to='/login'>swith to login</Link>
     </div>
   );
 };

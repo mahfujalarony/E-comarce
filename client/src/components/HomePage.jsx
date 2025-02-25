@@ -9,6 +9,7 @@ const HomePage = () => {
 
   return (
     <div>
+      
       <h1>HomePage</h1>
       {login ? (
         <p>user login</p>
@@ -18,6 +19,7 @@ const HomePage = () => {
 
       <Logout />
       <Link to={'/login'}>Login</Link>
+      <Link to={'/register'}>Register</Link>
     </div>
   )
 }

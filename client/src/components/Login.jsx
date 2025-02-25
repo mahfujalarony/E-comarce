@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -32,9 +36,10 @@ const Login = () => {
       console.log(response.data);
       alert(response.data.message); 
 
-      if(response.data.user) {
+        localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
+        navigate('/');
+
     } catch (error) {
       console.error(error);
       const errorMessage = error.response?.data?.message || 'Login Faild!';
@@ -68,6 +73,8 @@ const Login = () => {
         </label>
         <button type="submit">লগইন</button>
       </form>
+
+      <Link to='/register'>switch to register</Link>
     </div>
   );
 };
