@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from './AuthContext'; 
 
 const Login = () => {
-  
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); 
 
   const [formData, setFormData] = useState({
     email: '',
@@ -21,7 +22,6 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const data = {
       email: formData.email,
       password: formData.password,
@@ -30,20 +30,19 @@ const Login = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/login', data, {
         headers: {
-          'Content-Type': 'application/json', 
+          'Content-Type': 'application/json',
         },
       });
       console.log(response.data);
-      alert(response.data.message); 
+      alert(response.data.message);
 
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        navigate('/');
-
+     
+      login(response.data.user, response.data.token);
+      navigate('/');
     } catch (error) {
       console.error(error);
-      const errorMessage = error.response?.data?.message || 'Login Faild!';
-      alert(errorMessage); 
+      const errorMessage = error.response?.data?.message || 'Login Faild !';
+      alert(errorMessage);
     }
   };
 
@@ -51,30 +50,28 @@ const Login = () => {
     <div>
       <form onSubmit={handleSubmit}>
         <label>
-          <p>Email:</p>
+          <p>ইমেইল:</p>
           <input
-            type="email" // ইমেইল ফরম্যাট চেক করার জন্য
-            placeholder="email"
+            type="email"
+            placeholder="Email"
             name="email"
             value={formData.email}
             onChange={handleChange}
           />
         </label>
-
         <label>
           <p>Password:</p>
           <input
-            type="password" // পাসওয়ার্ড লুকানোর জন্য
-            placeholder="password"
+            type="password"
+            placeholder="Password"
             name="password"
             value={formData.password}
             onChange={handleChange}
           />
         </label>
-        <button type="submit">লগইন</button>
+        <button type="submit">Login</button>
       </form>
-
-      <Link to='/register'>switch to register</Link>
+      <Link to="/register">Switch to Register</Link>
     </div>
   );
 };

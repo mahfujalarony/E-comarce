@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import Logout from './Logout';
 import useAuth from './useAuth';
+import UserList from './UserList';
 
 const HomePage = () => {
 
@@ -20,6 +21,10 @@ const HomePage = () => {
       <Logout />
       <Link to={'/login'}>Login</Link>
       <Link to={'/register'}>Register</Link>
+
+      <div>
+        <UserList />
+      </div>
     </div>
   )
 }

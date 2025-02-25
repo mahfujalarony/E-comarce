@@ -1,28 +1,31 @@
-// Register.jsx
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from './AuthContext'; 
 
 const Register = () => {
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    photo: null
+    photo: null,
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleFileChange = (e) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      photo: e.target.files[0]
+      photo: e.target.files[0],
     }));
   };
 
@@ -37,15 +40,12 @@ const Register = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/register', data);
       console.log(response.data);
-
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-
+      login(response.data.user, response.data.token);
       alert(response.data.message);
-
+      navigate('/');
     } catch (error) {
       console.error(error);
-      alert(error.response.data.message);
+      alert(error.response?.data?.message || 'Registation Faild !');
     }
   };
 
@@ -53,51 +53,47 @@ const Register = () => {
     <div>
       <form onSubmit={handleSubmit}>
         <label>
-          <p>Name:</p>
-          <input 
-            type="text" 
+          <p>নাম:</p>
+          <input
+            type="text"
             name="name"
-            placeholder='Name'
+            placeholder="Name"
             value={formData.name}
             onChange={handleChange}
           />
         </label>
-
         <label>
           <p>Email:</p>
-          <input 
-            type="email" 
+          <input
+            type="email"
             name="email"
-            placeholder='Email'
+            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
           />
         </label>
-
         <label>
           <p>Password:</p>
-          <input 
-            type="password" 
+          <input
+            type="password"
             name="password"
-            placeholder='Password'
+            placeholder="Password"
             value={formData.password}
             onChange={handleChange}
           />
         </label>
-
         <label>
-          <p>Upload Photo:</p>
-          <input 
+          <p>Upload Pic:</p>
+          <input
             type="file"
             name="photo"
             onChange={handleFileChange}
             accept="image/*"
           />
         </label>
-
         <button type="submit">Register</button>
       </form>
-      <Link to='/login'>swith to login</Link>
+      <Link to="/login">Switch to login</Link>
     </div>
   );
 };

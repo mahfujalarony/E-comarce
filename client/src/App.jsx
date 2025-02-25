@@ -8,6 +8,8 @@ import HomePage from './components/HomePage'
 import Login from './components/Login'
 import Cart from './components/Cart'
 import Navbar from './components/Navbar'
+import AdminDashboard from './components/AdminDeshboard'
+import { AuthProvider } from './components/AuthContext'
 
 
 function App() {
@@ -16,6 +18,7 @@ function App() {
   return (
     
       <div>
+        <AuthProvider>
         <BrowserRouter>
           <div>
           <Navbar />
@@ -24,9 +27,12 @@ function App() {
             <Route path='/register' element={<Register />} />
             <Route path='/login' element={<Login />} />
             <Route path='/cart' element={<Cart />} />
+            <Route path='/admin' element={<AdminDashboard />} />
           </Routes>
           </div>
         </BrowserRouter>
+
+        </AuthProvider> 
       </div>
   )
 }
