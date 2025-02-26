@@ -7,7 +7,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/users', {
+        const res = await axios.get('http://localhost:3001/api/users', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setUsers(res.data);
@@ -20,7 +20,7 @@ const AdminDashboard = () => {
 
   const makeAdmin = async (email) => {
     try {
-      await axios.put('http://localhost:5000/api/make-admin', { email }, {
+      await axios.put('http://localhost:3001/api/users/make-admin', { email }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setUsers(users.map(user => 
@@ -35,7 +35,7 @@ const AdminDashboard = () => {
   
   const removeAdmin = async (email) => {
     try {
-      await axios.put('http://localhost:5000/api/remove-admin', { email }, {
+      await axios.put('http://localhost:3001/api/users/remove-admin', { email }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setUsers(users.map(user => 
@@ -49,7 +49,7 @@ const AdminDashboard = () => {
 
   const removeUser = async (email) => {
     try {
-      await axios.delete('http://localhost:5000/api/delete-user', {
+      await axios.delete('http://localhost:3001/api/users/delete-user', {
         data: { email },
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
