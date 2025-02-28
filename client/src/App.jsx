@@ -10,6 +10,9 @@ import Cart from './components/Cart'
 import Navbar from './components/Navbar'
 import AdminDashboard from './components/AdminDeshboard'
 import { AuthProvider } from './components/AuthContext'
+import CreateProduct from './components/Admin/CreateProduct'
+import GetProducts from './components/Admin/GetProducts'
+
 
 
 function App() {
@@ -28,6 +31,8 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/cart' element={<Cart />} />
             <Route path='/admin' element={<AdminDashboard />} />
+            <Route path='/create' element={<CreateProduct />} />
+            <Route path='/get' element={<GetProducts />} />
           </Routes>
           </div>
         </BrowserRouter>

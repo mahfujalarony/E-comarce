@@ -1,30 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import Logout from './Logout';
-import useAuth from './useAuth';
-import UserList from './UserList';
-
+import { Link } from 'react-router-dom'
 const HomePage = () => {
-
-  const login = useAuth();
-
   return (
     <div>
-      
       <h1>HomePage</h1>
-      {login ? (
-        <p>user login</p>
-      ) : (
-        <p>user not login</p>
-      )}
-
-      <Logout />
-      <Link to={'/login'}>Login</Link>
-      <Link to={'/register'}>Register</Link>
-
-      <div>
-        <UserList />
-      </div>
+      <h1><Link to='/create'>Create</Link></h1>
+      <h1><Link to='/login'>login</Link></h1>
+      <h1><Link to='/register'>register</Link></h1>
+      <h1><Link to='/get'>Get Product</Link></h1>
     </div>
   )
 }
