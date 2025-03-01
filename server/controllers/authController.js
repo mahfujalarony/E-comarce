@@ -38,7 +38,7 @@ const register = async (req, res) => {
         const user = new User({ name, email, password, photoPath });
         await user.save();
 
-        const token = jwt.sign({ user: user.name, email: user.email, role: user.role }, process.env.JWT_SECRET);
+        const token = jwt.sign({ user: user.name, email: user.email, userId: user._id, role: user.role }, process.env.JWT_SECRET);
         
         res.status(201).json({
             message: 'User registered successfully',
@@ -59,7 +59,7 @@ const login = async (req, res) => {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
 
-        const token = jwt.sign({ user: user.name, email: user.email, role: user.role }, process.env.JWT_SECRET);
+        const token = jwt.sign({ user: user.name, email: user.email, userId: user._id, role: user.role }, process.env.JWT_SECRET);
         res.status(200).json({ message: 'Login Successful', token, user });
     } catch (error) {
         res.status(500).json({ message: 'Login failed', error: error.message });

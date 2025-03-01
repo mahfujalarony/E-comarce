@@ -11,7 +11,11 @@ import Navbar from './components/Navbar'
 import AdminDashboard from './components/AdminDeshboard'
 import { AuthProvider } from './components/AuthContext'
 import CreateProduct from './components/Admin/CreateProduct'
-import GetProducts from './components/Admin/GetProducts'
+import ProductDetails from './components/ProductDetails'
+import ProductPage from './components/ProductPage'
+import OrderPage from './components/OrderPage'
+import PymentPage from './components/PymentPage'
+
 
 
 
@@ -32,7 +36,10 @@ function App() {
             <Route path='/cart' element={<Cart />} />
             <Route path='/admin' element={<AdminDashboard />} />
             <Route path='/create' element={<CreateProduct />} />
-            <Route path='/get' element={<GetProducts />} />
+            <Route path='/get' element={<ProductPage />} />
+            <Route path='/get/:id' element={<ProductDetails />} />
+            <Route path='order/:id' element={<OrderPage />} />
+            <Route path='pyment/:id' element={<PymentPage />} />
           </Routes>
           </div>
         </BrowserRouter>
