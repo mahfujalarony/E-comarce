@@ -61,8 +61,8 @@ const Navbar = () => {
         <div className="p-4">
           <h2 className="text-xl font-bold">Account</h2>
           <ul className="mt-4">
-            <li className="mb-2">Profile</li>
-            <li className="mb-2">Order</li>
+            <li className="mb-2" onClick={() => setIsSidebarOpen(false)}><Link to='/profile'  >Profile</Link></li>
+            <li className="mb-2" onClick={() => setIsSidebarOpen(false)}> <Link to='/myorders'>My Orders</Link></li>
             {isLoggedIn ? (
               <li className="mb-2 cursor-pointer" onClick={() => { logout(); setIsSidebarOpen(false); }}>
                 Logout

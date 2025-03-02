@@ -15,6 +15,8 @@ import ProductDetails from './components/ProductDetails'
 import ProductPage from './components/ProductPage'
 import OrderPage from './components/OrderPage'
 import PymentPage from './components/PymentPage'
+import Profile from './components/Profile'
+import MyOrders from './components/MyOrders'
 
 
 
@@ -40,6 +42,8 @@ function App() {
             <Route path='/get/:id' element={<ProductDetails />} />
             <Route path='order/:id' element={<OrderPage />} />
             <Route path='pyment/:id' element={<PymentPage />} />
+            <Route path='/profile' element={<Profile />} />
+            <Route path='myorders' element={<MyOrders />} />
           </Routes>
           </div>
         </BrowserRouter>

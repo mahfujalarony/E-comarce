@@ -13,7 +13,7 @@ const OrderPage = () => {
   const [sub_district, setsub_district] = useState('');
   const [postalCode, setPostalCode] = useState('');
   const [landmark, setLandmark] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState(''); // Add phone number state
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [product, setProduct] = useState(null);
 
   // Load product details
@@ -44,8 +44,11 @@ const OrderPage = () => {
       return;
     }
 
+    
     const orderData = {
       productId: id,
+      product_name: product.name,
+      product_price: product.price,
       quantity,
       name,
       city,
@@ -53,7 +56,10 @@ const OrderPage = () => {
       sub_district,
       postalCode,
       landmark,
-      phoneNumber, 
+      phoneNumber,
+      productImageUrl: product.images && product.images.length > 0 
+        ? `http://localhost:3001/uploads/products/${product.images[0].split('/').pop()}` 
+        : null,
     };
 
     try {
@@ -102,7 +108,6 @@ const OrderPage = () => {
     <div className="container mx-auto px-4 py-10 min-h-screen bg-gray-100">
       <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Order Page</h1>
 
-      
       <div className="bg-white p-6 rounded-xl shadow-md mb-8 max-w-lg mx-auto">
         {product.images && product.images.length > 0 ? (
           <img
@@ -119,7 +124,6 @@ const OrderPage = () => {
         <p className="text-lg text-center text-gray-600">Price: ${product.price}</p>
       </div>
 
- 
       <div className="bg-white p-8 rounded-xl shadow-md max-w-2xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
