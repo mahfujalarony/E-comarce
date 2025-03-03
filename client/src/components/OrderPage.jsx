@@ -57,6 +57,7 @@ const OrderPage = () => {
       postalCode,
       landmark,
       phoneNumber,
+      // productImageUrl: product.image && product.image.length > 0,
       productImageUrl: product.images && product.images.length > 0 
         ? `http://localhost:3001/uploads/products/${product.images[0].split('/').pop()}` 
         : null,

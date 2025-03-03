@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema({
   landmark: { type: String },
   phoneNumber: { type: String, required: true },
   productImageUrl: { type: String },
-  status: { type: String, default: 'Pending' },
+  status: { type: String, default: 'Active' },
   order_date: { type: String, default: () => new Date().toISOString().split("T")[0] },
     delivery_date: { 
         type: String, 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { FaCheckCircle, FaClock, FaTruck, FaTimesCircle } from "react-icons/fa";
 
 const MyOrders = () => {
@@ -8,72 +9,26 @@ const MyOrders = () => {
 
     const token = localStorage.getItem("token");
 
-    // Dummy data: Detailed like Amazon/Daraz
-    const dummyOrders = [
-        {
-            id: "ORD12345",
-            product_name: "Samsung Galaxy S23",
-            quantity: 1,
-            price: 75000,
-            image: "https://via.placeholder.com/100",
-            status: "Delivered",
-            order_date: "2025-02-20",
-            delivery_date: "2025-02-25",
-            tracking_id: "TRK98765",
-        },
-        {
-            id: "ORD12346",
-            product_name: "Cotton Kurti Set",
-            quantity: 2,
-            price: 2500,
-            image: "https://via.placeholder.com/100",
-            status: "Active",
-            order_date: "2025-02-28",
-            delivery_date: "2025-03-05",
-            tracking_id: "TRK98766",
-        },
-        {
-            id: "ORD12347",
-            product_name: "Sony Wireless Headphones",
-            quantity: 1,
-            price: 12000,
-            image: "https://via.placeholder.com/100",
-            status: "Pending",
-            order_date: "2025-03-01",
-            delivery_date: "TBD",
-            tracking_id: "N/A",
-        },
-    ];
-
     useEffect(() => {
-        if (!token) {
-            window.location.href = "/login";
-            return;
-        }
-
         const fetchOrders = async () => {
             try {
-                const response = await fetch('http://localhost:3001/api/orders', {
-                    method: 'GET',
+                const response = await axios.get("http://localhost:3001/api/myOrders", {
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization:': `Bearer ${token}`,
-                    }
-
-                })
-                if (response.ok) {
-                    const data = await response.json();
-                    setOrders(data);
-                    setLoading(false);
-                }
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
+                setOrders(response.data);
+                setLoading(false);
             } catch (error) {
                 setError(error.message);
                 setLoading(false);
+                console.log(error);
             }
         };
 
         fetchOrders();
-    }, [token]);
+    }, []); 
 
     if (loading) {
         return (
@@ -108,14 +63,14 @@ const MyOrders = () => {
                             key={order.id}
                             className="bg-white rounded-lg shadow-lg p-6 flex flex-col md:flex-row items-start gap-6 hover:shadow-xl transition-shadow duration-300"
                         >
-                            {/* Product Image */}
+
                             <img
-                                src={order.image}
+                                src={order.productImageUrl}
+                             
                                 alt={order.product_name}
                                 className="w-24 h-24 object-cover rounded-md border border-gray-200 hover:border-blue-500 transition-all duration-300"
                             />
 
-                            {/* Order Details */}
                             <div className="flex-1">
                                 <h3 className="text-xl font-semibold text-gray-800">
                                     {order.product_name}
@@ -129,11 +84,11 @@ const MyOrders = () => {
                                 <p className="text-gray-500 text-sm">
                                     Delivery Date: {order.delivery_date === "TBD" ? "To be determined" : order.delivery_date}
                                 </p>
-                                <p className="text-gray-500 text-sm">
+                                {/* <p className="text-gray-500 text-sm">
                                     Tracking ID: {order.tracking_id}
-                                </p>
+                                </p> */}
 
-                                {/* Status */}
+                        
                                 <div className="mt-2 flex items-center gap-2">
                                     {order.status === "Delivered" ? (
                                         <FaCheckCircle className="text-green-500" />

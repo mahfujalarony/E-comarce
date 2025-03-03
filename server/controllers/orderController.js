@@ -39,9 +39,18 @@ const placeOrder = async (req, res) => {
   }
 };
 
+// const getOrders = async (req, res) => {
+//   try {
+//     const order = await Order.find({ userId: req.user.userId });
+//     if(userId.length === 0) {
+//       return res.status(404).json({ message: 'No orders found'})
+//     }
+//   }
+// }
+
 const getOrders = async (req, res) => {
   try {
-      const orders = await Order.find({ userId: req.user.id });
+      const orders = await Order.find({ userId: req.user.userId });
       if (orders.length === 0) {
          return res.status(404).json({ message: "No orders found" });
       }
@@ -51,11 +60,11 @@ const getOrders = async (req, res) => {
           product_name: order.product_name,
           quantity: order.quantity,
           price: order.price,
-          productImageUrl: orders.productImageUrl,
+          productImageUrl: order.productImageUrl,
           status: order.status,
           order_date: order.order_date,
           delivery_date: order.delivery_date,
-          createdAt: format(new Date(order.createdAt), "dd-MM-yyyy"), 
+          // createdAt: format(new Date(order.createdAt), "dd-MM-yyyy"), 
       }));
 
       res.json(formattedOrders);
@@ -64,4 +73,36 @@ const getOrders = async (req, res) => {
   }
 };
 
-module.exports = { placeOrder, getOrders };
+const getAllOrders = async (req, res) => {
+  try {
+      const orders = await Order.find();
+      res.json(orders);
+  } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const updateOrderStatus = async (req, res) => {
+  try {
+      const order = await Order.findById(req.params.id);
+      if (!order) return res.status(404).json({ message: 'Order not found' });
+      
+      order.status = 'Completed';
+      order.completedAt = new Date();
+      await order.save();
+
+      res.json({ message: 'Order marked as completed', order });
+  } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+// const getOrdersForAdmin = async (req, res) {
+//   try {
+//     const orders = await Order.find();
+//     if (orders.length === 0) {
+//       return res.status(404).json({ message: 'No orders found'});
+//     }
+//     const formattedOrders = orders.map
+module.exports = { placeOrder, getOrders, getAllOrders, updateOrderStatus };

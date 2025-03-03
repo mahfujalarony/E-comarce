@@ -17,6 +17,7 @@ import OrderPage from './components/OrderPage'
 import PymentPage from './components/PymentPage'
 import Profile from './components/Profile'
 import MyOrders from './components/MyOrders'
+import OrderControler from './components/Admin/OrderControler'
 
 
 
@@ -44,6 +45,7 @@ function App() {
             <Route path='pyment/:id' element={<PymentPage />} />
             <Route path='/profile' element={<Profile />} />
             <Route path='myorders' element={<MyOrders />} />
+            <Route path='admin/orders' element={<OrderControler /> } /> 
           </Routes>
           </div>
         </BrowserRouter>
