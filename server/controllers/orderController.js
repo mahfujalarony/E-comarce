@@ -97,12 +97,22 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+const updateOrderStatusForUser = async (req, res) => {
+  try {
+      const order = await Order.findById(req.params.id);
+      if (!order) return res.status(404).json({ message: 'Order not found' });
+      
+      order.status = 'Cancelled';
+      order.completedAt = new Date();
+      await order.save();
 
-// const getOrdersForAdmin = async (req, res) {
-//   try {
-//     const orders = await Order.find();
-//     if (orders.length === 0) {
-//       return res.status(404).json({ message: 'No orders found'});
-//     }
-//     const formattedOrders = orders.map
-module.exports = { placeOrder, getOrders, getAllOrders, updateOrderStatus };
+      res.json({ message: 'Order marked as completed', order });
+  } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
+module.exports = { placeOrder, getOrders, getAllOrders, updateOrderStatus, updateOrderStatusForUser
+ };

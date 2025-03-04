@@ -43,7 +43,7 @@ const register = async (req, res) => {
         res.status(201).json({
             message: 'User registered successfully',
             token,
-            user: { name: user.name, email: user.email, photoPath: user.photoPath }
+            user: { name: user.name, email: user.email, userId: user._id, photoPath: user.photoPath }
         });
     } catch (error) {
         res.status(400).json({ message: 'Registration failed', error: error.message });

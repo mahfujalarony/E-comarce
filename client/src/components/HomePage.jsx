@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react'
+import ProductPage from './ProductPage'
+// import Navbar from './Navbar'
 const HomePage = () => {
   return (
     <div>
-      <h1>HomePage</h1>
-      <h1><Link to='/create'>Create</Link></h1>
-      <h1><Link to='/login'>login</Link></h1>
-      <h1><Link to='/register'>register</Link></h1>
-      <h1><Link to='/get'>Get Product</Link></h1>
+      {/* <Navbar /> */}
+      <ProductPage />
     </div>
   )
 }

@@ -12,12 +12,13 @@ import AdminDashboard from './components/AdminDeshboard'
 import { AuthProvider } from './components/AuthContext'
 import CreateProduct from './components/Admin/CreateProduct'
 import ProductDetails from './components/ProductDetails'
-import ProductPage from './components/ProductPage'
+// import ProductPage from './components/ProductPage'
 import OrderPage from './components/OrderPage'
 import PymentPage from './components/PymentPage'
 import Profile from './components/Profile'
 import MyOrders from './components/MyOrders'
 import OrderControler from './components/Admin/OrderControler'
+import UserList from './components/Admin/UserList'
 
 
 
@@ -38,15 +39,17 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/cart' element={<Cart />} />
             <Route path='/admin' element={<AdminDashboard />} />
-            <Route path='/create' element={<CreateProduct />} />
-            <Route path='/get' element={<ProductPage />} />
+            
+            {/* <Route path='/get' element={<ProductPage />} /> */}
             <Route path='/get/:id' element={<ProductDetails />} />
             <Route path='order/:id' element={<OrderPage />} />
             <Route path='pyment/:id' element={<PymentPage />} />
             <Route path='/profile' element={<Profile />} />
             <Route path='myorders' element={<MyOrders />} />
             <Route path='admin/orders' element={<OrderControler /> } /> 
-          </Routes>
+            <Route path='admin/users' element = {<UserList />} />
+            <Route path='/admin/create' element={<CreateProduct />} />
+           </Routes>
           </div>
         </BrowserRouter>
 
