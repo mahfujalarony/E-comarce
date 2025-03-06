@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,17 +10,38 @@ const ProductPage = () => {
   const [cart, setCart] = useState({ items: [], total: 0 });
   const { user } = useContext(AuthContext);
   const userId = user?.userId || JSON.parse(localStorage.getItem("user"))?.userId || "";
+  const location = useLocation();
+
+  // URL থেকে 'search' প্যারামিটার পড়া
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get('search') || '';
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        // প্রতিবার API থেকে সব প্রোডাক্ট ফেচ করা হবে
         const response = await axios.get('http://localhost:3001/api/products');
-        setProducts(response.data);
+        const allProducts = response.data;
+
+        // যদি searchQuery থাকে তবে ফিল্টার করো, নইলে সব প্রোডাক্ট সেট করো
+        if (searchQuery) {
+          const filteredProducts = allProducts.filter(product =>
+            product.name.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+          setProducts(filteredProducts);
+        } else {
+          setProducts(allProducts); // searchQuery খালি হলে সব প্রোডাক্ট দেখাও
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
+        setProducts([]); // এরর হলে খালি অ্যারে সেট করো
       }
     };
 
+    fetchProducts();
+  }, [searchQuery]); // শুধু searchQuery-এর উপর নির্ভর করবে
+
+  useEffect(() => {
     const fetchCart = async () => {
       if (!userId) return;
       try {
@@ -31,9 +52,8 @@ const ProductPage = () => {
       }
     };
 
-    fetchProducts();
     fetchCart();
-  }, [userId]);
+  }, [userId]); // কার্ট ফেচিং আলাদা useEffect-এ, শুধু userId-এর উপর নির্ভর করে
 
   const handleAddToCart = async (productId) => {
     if (!userId) {
@@ -73,40 +93,43 @@ const ProductPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 bg-gray-100 min-h-screen">
-      {/* <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Our Products</h1> */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {products.map((product) => (
-          <div key={product._id} className="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-            <Link to={`/get/${product._id}`} className="no-underline text-gray-800 cursor-pointer">
-              {product.images && product.images.length > 0 && (
-                <img
-                  src={`http://localhost:3001/uploads/products/${product.images[0].split('/').pop()}`}
-                  alt={product.name}
-                  className="w-full h-40 md:h-48 lg:h-56 object-cover"
-                />
-              )}
-              <div className="p-4">
-                <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2 line-clamp-1">{product.name}</h2>
-                <p className="text-gray-600 text-sm mb-3 line-clamp-2 overflow-hidden">{product.description}</p>
-                <div className="flex justify-between items-center mb-2">
-                  <p className="text-lg font-bold text-green-600">${product.price}</p>
-                  <p className="text-sm text-gray-500">Stock: {product.stock}</p>
+        {products.length === 0 ? (
+          <p>No products found</p> // কোনো প্রোডাক্ট না থাকলে মেসেজ দেখাও
+        ) : (
+          products.map((product) => (
+            <div key={product._id} className="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+              <Link to={`/get/${product._id}`} className="no-underline text-gray-800 cursor-pointer">
+                {product.images && product.images.length > 0 && (
+                  <img
+                    src={`http://localhost:3001/uploads/products/${product.images[0].split('/').pop()}`}
+                    alt={product.name}
+                    className="w-full h-40 md:h-48 lg:h-56 object-cover"
+                  />
+                )}
+                <div className="p-4">
+                  <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2 line-clamp-1">{product.name}</h2>
+                  <p className="text-gray-600 text-sm mb-3 line-clamp-2 overflow-hidden">{product.description}</p>
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-lg font-bold text-green-600">${product.price}</p>
+                    <p className="text-sm text-gray-500">Stock: {product.stock}</p>
+                  </div>
+                  <p className="text-sm text-gray-700"><span className="font-medium">Category:</span> {product.category}</p>
+                  <p className="text-sm text-gray-700"><span className="font-medium">Brand:</span> {product.brand}</p>
                 </div>
-                <p className="text-sm text-gray-700"><span className="font-medium">Category:</span> {product.category}</p>
-                <p className="text-sm text-gray-700"><span className="font-medium">Brand:</span> {product.brand}</p>
-              </div>
-            </Link>
-            <button
-              onClick={() => handleAddToCart(product._id)}
-              disabled={product.stock <= 0}
-              className={`mt-4 w-full py-2 rounded-md text-white transition-colors duration-300 ${
-                product.stock <= 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-            >
-              {product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
-            </button>
-          </div>
-        ))}
+              </Link>
+              <button
+                onClick={() => handleAddToCart(product._id)}
+                disabled={product.stock <= 0}
+                className={`mt-4 w-full py-2 rounded-md text-white transition-colors duration-300 ${
+                  product.stock <= 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+              >
+                {product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+              </button>
+            </div>
+          ))
+        )}
       </div>
 
       {/* কার্ট প্রিভিউ */}
@@ -125,7 +148,7 @@ const ProductPage = () => {
         <p className="font-bold">Total: ${cart.total.toFixed(2)}</p>
       </div>
 
-      {/* টোস্ট নোটিফিকেশন */}
+    
       <ToastContainer />
     </div>
   );

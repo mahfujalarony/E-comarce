@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const Cart = () => {
   const [cart, setCart] = useState({ items: [], total: 0 });
   const { user } = useContext(AuthContext);
-  const userId = user?.userId || JSON.parse(localStorage.getItem("user"))?.userId || "";
+  const userId = user?.userId || JSON.parse(localStorage.getItem('user'))?.userId || '';
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,15 +45,34 @@ const Cart = () => {
   };
 
   const handleBuyNow = (productId) => {
-    // "Buy Now" এ ক্লিক করলে /order/{productId} এ রিডাইরেক্ট করবে
     navigate(`/order/${productId}`);
   };
 
+  const handleShopNow = () => {
+    navigate('/products'); // Redirect to products page
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Shopping Cart</h2>
+    <div className="container mx-auto px-4 py-8 max-w-4xl min-h-screen">
+      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-gray-800">Shopping Cart</h2>
       {cart.items.length === 0 ? (
-        <p className="text-gray-600 text-center">Your cart is empty</p>
+        <div className="flex flex-col items-center justify-center h-[60vh] bg-white p-6 rounded-lg shadow-md">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/891/891407.png" // Empty cart icon (you can replace with your own image)
+            alt="Empty Cart"
+            className="w-24 h-24 mb-4 opacity-70"
+          />
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">Your Cart is Empty</h3>
+          <p className="text-gray-500 text-center mb-6 max-w-md">
+            Looks like you haven’t added anything to your cart yet. Start shopping to fill it up!
+          </p>
+          <button
+            onClick={handleShopNow}
+            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+          >
+            Shop Now
+          </button>
+        </div>
       ) : (
         <div className="space-y-6">
           {cart.items.map((item) => (
@@ -70,7 +89,7 @@ const Cart = () => {
                   />
                 )}
                 <div>
-                  <h3 className="font-semibold text-lg">{item.productId.name}</h3>
+                  <h3 className="font-semibold text-lg text-gray-800">{item.productId.name}</h3>
                   <p className="text-gray-600">${item.price} x {item.quantity}</p>
                 </div>
               </div>
@@ -91,7 +110,9 @@ const Cart = () => {
             </div>
           ))}
           <div className="mt-6 text-right">
-            <p className="text-xl md:text-2xl font-bold">Total: ${cart.total.toFixed(2)}</p>
+            <p className="text-xl md:text-2xl font-bold text-gray-800">
+              Total: ${cart.total.toFixed(2)}
+            </p>
             <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition duration-200">
               Checkout
             </button>
