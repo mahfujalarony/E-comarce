@@ -10,10 +10,10 @@ const ProfilePage = () => {
   const [token, setToken] = useState(null);
 
   useEffect(() => {
-    const storedData = localStorage.getItem("userProfile");
+    const storedData = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
 
-    setToken(storedToken); // টোকেন সেট করা
+    setToken(storedToken); 
     if (storedData) {
       setProfileData(JSON.parse(storedData));
     } else {
@@ -45,10 +45,13 @@ const ProfilePage = () => {
           <div className="flex flex-col items-center">
             {profileData.photoPath ? (
               <img
-                src={profileData.photoPath}
+                src={`http://localhost:3001${profileData.photoPath}`}
                 alt="Profile"
                 className="w-24 h-24 rounded-full border-4 border-blue-500 shadow-md"
-                onError={(e) => (e.target.src = "")}
+                onError={(e) => {
+                  e.target.src = ""; // ইমেজ লোড না হলে খালি স্ট্রিং সেট করুন
+                  e.target.style.display = "none"; // ইমেজ হাইড করুন
+                }}
               />
             ) : (
               <FaUserCircle className="w-24 h-24 text-gray-400" />
