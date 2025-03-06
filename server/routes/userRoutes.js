@@ -9,4 +9,5 @@ router.put('/make-admin', isAdmin, makeAdmin);
 router.put('/remove-admin', isAdmin, removeAdmin);
 router.delete('/delete-user', isAdmin, deleteUser);
 
+
 module.exports = router;

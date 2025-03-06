@@ -11,40 +11,44 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
-  // Toggle sidebar visibility
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Check if token exists in localStorage
+
   const checkToken = () => {
     const token = localStorage.getItem('token');
     return !!token;
   };
 
-  // Handle login redirect from modal
+
   const handleLoginRedirect = () => {
     setIsLoginModalOpen(false);
     setIsSidebarOpen(false);
     navigate('/login');
   };
 
-  // Close login modal
+ 
   const handleLoginCancel = () => {
     setIsLoginModalOpen(false);
   };
 
-  // Handle Profile click with token check
-  const handleProfileClick = () => {
-    if (checkToken()) {
-      navigate('/profile');
-      setIsSidebarOpen(false);
-    } else {
-      setIsLoginModalOpen(true);
-    }
-  };
 
-  // Handle My Orders click with token check
+  // const handleProfileClick = () => {
+  //   if (checkToken()) {
+  //     navigate('/profile');
+  //     setIsSidebarOpen(false);
+  //   } else {
+  //     setIsLoginModalOpen(true);
+  //   }
+  // };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  }
+
+  
   const handleOrdersClick = () => {
     if (checkToken()) {
       navigate('/myorders');
@@ -54,7 +58,7 @@ const Navbar = () => {
     }
   };
 
-  // Handle Cart click with token check
+
   const handleCartClick = (e) => {
     e.preventDefault();
     if (checkToken()) {
@@ -64,41 +68,39 @@ const Navbar = () => {
     }
   };
 
-  // Handle search functionality
   const handleSearch = () => {
     if (searchQuery.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
-  // Handle logout confirmation
+
   const handleLogoutClick = () => {
-    setIsLogoutModalOpen(true); // Show logout confirmation popup
+    setIsLogoutModalOpen(true); 
   };
 
-  // Confirm logout
   const confirmLogout = () => {
     logout();
     setIsLogoutModalOpen(false);
     setIsSidebarOpen(false);
   };
 
-  // Cancel logout
+ 
   const cancelLogout = () => {
     setIsLogoutModalOpen(false);
   };
 
   return (
     <div>
-      {/* Navbar */}
+ 
       <nav className="bg-gray-900 text-white p-4 shadow-lg fixed top-0 left-0 w-full z-50">
         <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Logo */}
+      
           <div className="flex items-center justify-between w-full sm:w-auto">
             <Link to="/" className="text-xl sm:text-2xl font-bold">
               <span className="text-yellow-400">Ama</span>zon
             </Link>
-            {/* Hamburger Menu for Mobile */}
+           
             <button
               onClick={toggleSidebar}
               className="sm:hidden text-2xl text-white hover:text-yellow-400 focus:outline-none"
@@ -107,7 +109,7 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Search Bar */}
+       
           <div className="flex w-full sm:w-1/2 max-w-lg">
             <input
               type="text"
@@ -124,7 +126,7 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Navbar Links */}
+        
           <div className="hidden sm:flex items-center space-x-6">
             <div
               className="flex items-center hover:text-yellow-400 cursor-pointer"
@@ -145,10 +147,10 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Body Content Adjust for Fixed Navbar */}
+     
       <div className="mt-16"></div>
 
-      {/* Sidebar */}
+ 
       <div
         className={`fixed top-0 right-0 h-full w-64 bg-gray-800 text-white transform ${
           isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
@@ -190,7 +192,7 @@ const Navbar = () => {
             {isLoggedIn ? (
               <li>
                 <button
-                  onClick={handleLogoutClick} // Updated to show confirmation popup
+                  onClick={handleLogoutClick}
                   className="w-full text-left hover:text-yellow-400 transition duration-300"
                 >
                   Logout
@@ -221,7 +223,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Login Modal */}
+
       {isLoginModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-sm">
@@ -247,7 +249,7 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Logout Confirmation Modal */}
+
       {isLogoutModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-sm">

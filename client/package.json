@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
     "axios": "^1.7.9",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.477.0",
