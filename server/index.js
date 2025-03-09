@@ -15,18 +15,29 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use("/uploads", express.static("uploads"));
 
 
-connectDB().then(() => {
-  createDefaultAdmin(); 
-});
+app.use("/uploads", express.static("public/uploads"));
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', productsRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', cartRoutes);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+let isConnected = false;
+const connectToDatabase = async () => {
+  if (!isConnected) {
+    await connectDB();
+    await createDefaultAdmin();
+    isConnected = true;
+  }
+};
+
+
+module.exports = async (req, res) => {
+  await connectToDatabase();
+  return app(req, res);
+};
