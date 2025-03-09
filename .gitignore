@@ -1,1 +1,7 @@
 backup code
+server/.env
+.env
+*.key
+id_rsa
+npm-debug.log*
+server/node_modules/
