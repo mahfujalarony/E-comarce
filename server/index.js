@@ -12,11 +12,9 @@ const cartRoutes = require('./routes/cartRoutes');
 dotenv.config();
 const app = express();
 
-
+// Middleware
 app.use(express.json());
 app.use(cors());
-
-
 app.use("/uploads", express.static("public/uploads"));
 
 // Routes
@@ -26,18 +24,28 @@ app.use('/api', productsRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', cartRoutes);
 
-
+// MongoDB কানেকশন
 let isConnected = false;
 const connectToDatabase = async () => {
   if (!isConnected) {
-    await connectDB();
-    await createDefaultAdmin();
-    isConnected = true;
+    try {
+      await connectDB();
+      await createDefaultAdmin();
+      isConnected = true;
+      console.log('MongoDB connected');
+    } catch (error) {
+      console.error('MongoDB connection error:', error);
+      throw error; // এরর থাকলে ফাংশন বন্ধ হবে
+    }
   }
 };
 
-
+// Vercel-এর জন্য এক্সপোর্ট
 module.exports = async (req, res) => {
-  await connectToDatabase();
-  return app(req, res);
+  try {
+    await connectToDatabase();
+    return app(req, res);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error', details: error.message });
+  }
 };
