@@ -63,6 +63,7 @@ const Navbar = () => {
     e.preventDefault();
     if (checkToken()) {
       navigate('/cart');
+      setIsSidebarOpen(false);
     } else {
       setIsLoginModalOpen(true);
     }

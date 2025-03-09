@@ -4,18 +4,17 @@ import OrderController from "./Admin/OrderControler";
 import CreateProduct from "./Admin/CreateProduct";
 
 const AdminDashboard = () => {
-    const [activeSection, setActiveSection] = useState("users"); // ডিফল্ট সেকশন
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // সাইডবারের ভিজিবিলিটি
+    const [activeSection, setActiveSection] = useState("users");
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    // সেকশন পরিবর্তন
     const handleSectionChange = (section) => {
         setActiveSection(section);
-        setIsSidebarOpen(false); // ছোট ডিভাইসে সেকশন পরিবর্তন করলে সাইডবার বন্ধ হবে
+        setIsSidebarOpen(false);
     };
 
     return (
         <div className="flex min-h-screen bg-gray-100">
-            {/* হ্যামবার্গার মেনু বাটন (ছোট ডিভাইসের জন্য) */}
+          
             <button
                 className="fixed top-4 left-4 p-2 bg-gray-800 text-white rounded lg:hidden z-50"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -36,11 +35,12 @@ const AdminDashboard = () => {
                 </svg>
             </button>
 
-            {/* সাইডবার */}
+         
             <div
                 className={`fixed lg:relative inset-y-0 left-0 w-64 bg-gray-800 text-white transform ${
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-                } lg:translate-x-0 transition-transform duration-200 ease-in-out z-40`}
+                } lg:translate-x-0 transition-transform duration-200 ease-in-out z-40 
+                top-[calc(60px)] h-[calc(100vh-60px)] lg:top-0 lg:h-screen`}
             >
                 <div className="p-4">
                     <h2 className="text-xl font-bold">Admin Dashboard</h2>
@@ -73,8 +73,8 @@ const AdminDashboard = () => {
                 </ul>
             </div>
 
-            {/* মূল কন্টেন্ট */}
-            <div className="flex-1 p-6">
+     
+            <div className="flex-1 p-6 pt-[calc(60px+1rem)] lg:pt-6">
                 {activeSection === "users" && <UserList />}
                 {activeSection === "orders" && <OrderController />}
                 {activeSection === "create-product" && <CreateProduct />}

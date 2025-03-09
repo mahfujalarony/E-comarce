@@ -85,7 +85,7 @@ const UserList = () => {
         </h1> */}
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* User List */}
+      
           <div className="w-full lg:w-2/3 bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-xl font-semibold text-gray-700 mb-6">
               User List ({users.length})
@@ -145,7 +145,7 @@ const UserList = () => {
                       </div>
                     </div>
 
-                    {/* User Details - Mobile View (below list item) */}
+                   
                     {selectedUser?.email === user.email && (
                       <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200 lg:hidden">
                         <h3 className="text-lg font-semibold text-gray-700 mb-3">
@@ -182,7 +182,7 @@ const UserList = () => {
             </ul>
           </div>
 
-          {/* User Details - Desktop View (Right Sidebar) */}
+   
           <div className="hidden lg:block w-full lg:w-1/3">
             <div className="bg-white p-6 rounded-lg shadow-lg sticky top-8">
               <h3 className="text-xl font-semibold text-gray-700 mb-4">
@@ -196,7 +196,7 @@ const UserList = () => {
                   </p>
                   <p>
                     <span className="font-medium">Email:</span>{" "}
-                    {selectedUser.email || "নেই"}
+                    {selectedUser.email || "Not found"}
                   </p>
                   <p>
                     <span className="font-medium">ID:</span> {selectedUser.id}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
@@ -7,105 +7,172 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
-  const [cart, setCart] = useState({ items: [], total: 0 });
+  const [imageDataMap, setImageDataMap] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
   const userId = user?.userId || JSON.parse(localStorage.getItem("user"))?.userId || "";
   const location = useLocation();
-
-  // URL থেকে 'search' প্যারামিটার পড়া
+  const API_URL = 'http://localhost:3001';
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
+  const bottomSentinel = useRef(null);
+  const scrollContainerRef = useRef(null);
+  const productRefs = useRef({});
+  const PRODUCTS_PER_PAGE = 10;
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        // প্রতিবার API থেকে সব প্রোডাক্ট ফেচ করা হবে
-        const response = await axios.get('http://localhost:3001/api/products');
-        const allProducts = response.data;
+    setProducts([]);
+    setCurrentPage(1);
+    setTotalPages(1);
+    fetchProducts(1, true);
+  }, [searchQuery]);
 
-        // যদি searchQuery থাকে তবে ফিল্টার করো, নইলে সব প্রোডাক্ট সেট করো
-        if (searchQuery) {
-          const filteredProducts = allProducts.filter(product =>
-            product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const fetchProducts = async (pageToFetch, reset = false) => {
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const response = await axios.get(`${API_URL}/api/products`, {
+        params: { page: pageToFetch, limit: PRODUCTS_PER_PAGE, search: searchQuery },
+      });
+
+      console.log(`Fetching page ${pageToFetch} - Response:`, response.data);
+
+      let fetchedProducts, total;
+      if (Array.isArray(response.data)) {
+        fetchedProducts = response.data;
+        total = fetchedProducts.length;
+      } else {
+        fetchedProducts = response.data.products || [];
+        total = response.data.total || 0;
+      }
+
+      if (fetchedProducts.length === 0 && total === 0) {
+        setProducts([]);
+        setTotalPages(1);
+      } else {
+        setTotalPages(Math.ceil(total / PRODUCTS_PER_PAGE));
+
+        setProducts(prev => {
+          const newProducts = reset ? fetchedProducts : [...prev, ...fetchedProducts];
+         
+          const uniqueProducts = Array.from(
+            new Map(newProducts.map(product => [product._id, product])).values()
           );
-          setProducts(filteredProducts);
-        } else {
-          setProducts(allProducts); // searchQuery খালি হলে সব প্রোডাক্ট দেখাও
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        setProducts([]); // এরর হলে খালি অ্যারে সেট করো
-      }
-    };
+          console.log(`Page ${pageToFetch} - Unique products:`, uniqueProducts);
+          return uniqueProducts;
+        });
 
-    fetchProducts();
-  }, [searchQuery]); // শুধু searchQuery-এর উপর নির্ভর করবে
+        if (!reset) setCurrentPage(pageToFetch);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      if (reset) setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const loadImage = async (url) => {
+    if (imageDataMap[url]) return;
+    try {
+      const res = await axios.get(`${API_URL}/api/image-data`, { params: { url } });
+      setImageDataMap(prev => ({ ...prev, [url]: res.data.imageData }));
+    } catch (error) {
+      console.error(`Error loading image for ${url}:`, error);
+    }
+  };
 
   useEffect(() => {
-    const fetchCart = async () => {
-      if (!userId) return;
-      try {
-        const response = await axios.get(`http://localhost:3001/api/cart/${userId}`);
-        setCart(response.data);
-      } catch (error) {
-        console.error('Error fetching cart:', error);
-      }
-    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const url = entry.target.dataset.url;
+            loadImage(url);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '100px' }
+    );
 
-    fetchCart();
-  }, [userId]); // কার্ট ফেচিং আলাদা useEffect-এ, শুধু userId-এর উপর নির্ভর করে
+    Object.values(productRefs.current).forEach(ref => ref && observer.observe(ref));
+    return () => observer.disconnect();
+  }, [products]);
+
+  // নিচে স্ক্রল করলে লোড
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && currentPage < totalPages && !loading) {
+          const nextPage = currentPage + 1;
+          console.log(`Triggering load for page ${nextPage}`);
+          fetchProducts(nextPage);
+        }
+      },
+      { root: scrollContainerRef.current, rootMargin: '0px 0px 200px 0px', threshold: 0.1 }
+    );
+
+    if (bottomSentinel.current) observer.observe(bottomSentinel.current);
+    return () => observer.disconnect();
+  }, [currentPage, totalPages, loading]);
 
   const handleAddToCart = async (productId) => {
     if (!userId) {
-      alert("Please log in first!");
+      toast.error("Please log in first!", { position: "top-right", autoClose: 2000 });
       return;
     }
-
     try {
-      const response = await axios.post('http://localhost:3001/api/cart/add', {
+      const response = await axios.post(`${API_URL}/api/cart/add`, {
         userId,
         productId,
         quantity: 1,
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setCart(response.data);
-      toast.success('Product added to cart!', {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.success('Product added to cart!', { position: "top-right", autoClose: 2000 });
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error('Failed to add product to cart.', {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error('Failed to add product to cart.', { position: "top-right", autoClose: 2000 });
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-gray-100 min-h-screen">
+    <div
+      ref={scrollContainerRef}
+      className="container mx-auto px-4 py-8 bg-gray-100 overflow-y-auto"
+      style={{ maxHeight: '100vh' }}
+    >
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {products.length === 0 ? (
-          <p>No products found</p> // কোনো প্রোডাক্ট না থাকলে মেসেজ দেখাও
+        {products.length === 0 && !loading ? (
+          <p className="col-span-full text-center">No products found</p>
         ) : (
           products.map((product) => (
-            <div key={product._id} className="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+            <div
+              key={product._id}
+              className="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden"
+            >
               <Link to={`/get/${product._id}`} className="no-underline text-gray-800 cursor-pointer">
                 {product.images && product.images.length > 0 && (
-                  <img
-                    src={`http://localhost:3001/uploads/products/${product.images[0].split('/').pop()}`}
-                    alt={product.name}
-                    className="w-full h-40 md:h-48 lg:h-56 object-cover"
-                  />
+                  <div
+                    ref={el => productRefs.current[product._id] = el}
+                    data-url={product.images[0]}
+                    className="w-full h-40 md:h-48 lg:h-56 bg-gray-200 flex items-center justify-center"
+                  >
+                    {imageDataMap[product.images[0]] ? (
+                      <img
+                        src={imageDataMap[product.images[0]]}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <p>Loading...</p>
+                    )}
+                  </div>
                 )}
                 <div className="p-4">
                   <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2 line-clamp-1">{product.name}</h2>
@@ -132,23 +199,11 @@ const ProductPage = () => {
         )}
       </div>
 
-      {/* কার্ট প্রিভিউ */}
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Cart Preview</h2>
-        {cart.items.length === 0 ? (
-          <p>No items in cart</p>
-        ) : (
-          cart.items.map((item) => (
-            <div key={item.productId._id} className="flex justify-between mb-2">
-              <span>{item.productId.name} (x{item.quantity})</span>
-              <span>${(item.price * item.quantity).toFixed(2)}</span>
-            </div>
-          ))
-        )}
-        <p className="font-bold">Total: ${cart.total.toFixed(2)}</p>
-      </div>
+      {loading && (
+        <p className="text-center py-4">Loading more products...</p>
+      )}
+      <div ref={bottomSentinel} style={{ height: '10px' }}></div>
 
-    
       <ToastContainer />
     </div>
   );

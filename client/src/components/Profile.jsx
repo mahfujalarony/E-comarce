@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaUserCircle, FaShoppingCart, FaBoxOpen, FaStore, FaSignOutAlt, FaSignInAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { Dialog } from "@headlessui/react";
+import axios from "axios";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
+  const [imageData, setImageData] = useState(null); 
   const [showPopup, setShowPopup] = useState(false);
   const [token, setToken] = useState(null);
+  const imgRef = useRef(null); 
 
   useEffect(() => {
     const storedData = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
 
-    setToken(storedToken); 
+    setToken(storedToken);
     if (storedData) {
       setProfileData(JSON.parse(storedData));
     } else {
@@ -26,10 +29,34 @@ const ProfilePage = () => {
     }
   }, []);
 
+  
+  useEffect(() => {
+    if (!profileData?.photoPath) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          axios
+            .get("http://localhost:3001/api/auth/image-data", {
+              params: { url: profileData.photoPath },
+            })
+            .then((res) => setImageData(res.data.imageData))
+            .catch((err) => console.error("Error fetching image:", err));
+          observer.unobserve(imgRef.current);
+        }
+      },
+      { rootMargin: "100px" }
+    );
+
+    if (imgRef.current) observer.observe(imgRef.current);
+
+    return () => observer.disconnect();
+  }, [profileData]);
+
   const handleLogout = () => {
-    localStorage.removeItem("userProfile");
+    localStorage.removeItem("user");
     localStorage.removeItem("token");
-    setToken(null); // টোকেন সেট null করে দেওয়া হলো
+    setToken(null);
     navigate("/");
     window.location.reload();
   };
@@ -38,21 +65,27 @@ const ProfilePage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Profile Info */}
+   
       <div className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="bg-white shadow-lg p-6 rounded-lg w-full max-w-md">
-          {/* Profile Image */}
+        
           <div className="flex flex-col items-center">
             {profileData.photoPath ? (
-              <img
-                src={`http://localhost:3001${profileData.photoPath}`}
-                alt="Profile"
-                className="w-24 h-24 rounded-full border-4 border-blue-500 shadow-md"
-                onError={(e) => {
-                  e.target.src = ""; // ইমেজ লোড না হলে খালি স্ট্রিং সেট করুন
-                  e.target.style.display = "none"; // ইমেজ হাইড করুন
-                }}
-              />
+              <div ref={imgRef} className="w-24 h-24 rounded-full border-4 border-blue-500 shadow-md flex items-center justify-center">
+                {imageData ? (
+                  <img
+                    src={imageData}
+                    alt="Profile"
+                    className="w-full h-full rounded-full object-cover"
+                    onError={(e) => {
+                      e.target.src = "";
+                      e.target.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <div className="text-gray-400">Loading...</div>
+                )}
+              </div>
             ) : (
               <FaUserCircle className="w-24 h-24 text-gray-400" />
             )}
@@ -60,7 +93,7 @@ const ProfilePage = () => {
             <p className="text-gray-600">{profileData.email}</p>
           </div>
 
-          {/* Profile Details */}
+        
           <div className="mt-4 space-y-3">
             <div className="flex justify-between">
               <span className="font-semibold">User ID:</span>
@@ -78,7 +111,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Navigation & Logout/Login - Always at Bottom */}
+     
       <div className="w-full bg-white shadow-md p-4 mt-auto">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <button
@@ -99,8 +132,6 @@ const ProfilePage = () => {
           >
             <FaBoxOpen className="mr-2" /> My Orders
           </button>
-
-          {/* টোকেন থাকলে Logout, না থাকলে Login দেখাবে */}
           {token ? (
             <button
               onClick={() => setShowPopup(true)}
@@ -119,7 +150,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Logout Confirmation Popup */}
+      
       {showPopup && (
         <Dialog open={showPopup} onClose={() => setShowPopup(false)}>
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

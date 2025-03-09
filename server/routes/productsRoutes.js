@@ -1,12 +1,12 @@
-const express = require("express");
-const productController = require("../controllers/ProductsControler");
-const upload = require("../utils/upload");
+const express = require('express');
+const productController = require('../controllers/ProductsControler');
+const upload = require('../utils/upload');
 
 const router = express.Router();
 
-
-router.post("/products", upload.array("images", 5), productController.createProduct);
-router.get('/products', productController.getProducts)
-router.get("/products/:id", productController.getProductById)
+router.post('/products', upload.array('images', 20), productController.createProduct);
+router.get('/products', productController.getProducts);
+router.get('/products/:id', productController.getProductById);
+router.get('/image-data', productController.getImageData);
 
 module.exports = router;

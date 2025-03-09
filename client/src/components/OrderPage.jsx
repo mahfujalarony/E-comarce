@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const OrderPage = () => {
@@ -10,31 +11,59 @@ const OrderPage = () => {
   const [name, setName] = useState('');
   const [city, setCity] = useState('');
   const [district, setDistrict] = useState('');
-  const [sub_district, setsub_district] = useState('');
+  const [sub_district, setSubDistrict] = useState('');
   const [postalCode, setPostalCode] = useState('');
   const [landmark, setLandmark] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [product, setProduct] = useState(null);
+  const [imageData, setImageData] = useState(null); 
+  const imageRef = useRef(null); 
+  const API_URL =  'http://localhost:3001'; 
 
-  // Load product details
+  
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/products/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to load product details');
-        }
-        const data = await response.json();
-        setProduct(data);
+        const response = await axios.get(`${API_URL}/api/products/${id}`);
+        setProduct(response.data);
       } catch (error) {
         console.error('Error loading product:', error);
+        setMessage('Failed to load product details.');
       }
     };
 
     fetchProductDetails();
-  }, [id]);
+  }, [id, API_URL]);
 
-  // Place order function
+ 
+  const loadImage = async (url) => {
+    if (imageData) return;
+    try {
+      const res = await axios.get(`${API_URL}/api/image-data`, { params: { url } });
+      setImageData(res.data.imageData);
+    } catch (error) {
+      console.error(`Error loading image for ${url}:`, error.response?.data || error.message);
+    }
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && product?.images?.[0]) {
+            loadImage(product.images[0]);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '100px' }
+    );
+
+    if (imageRef.current) observer.observe(imageRef.current);
+    return () => observer.disconnect();
+  }, [product]);
+
+
   const placeOrder = async () => {
     const token = localStorage.getItem('token');
 
@@ -44,7 +73,6 @@ const OrderPage = () => {
       return;
     }
 
-    
     const orderData = {
       productId: id,
       product_name: product.name,
@@ -57,33 +85,21 @@ const OrderPage = () => {
       postalCode,
       landmark,
       phoneNumber,
-      // productImageUrl: product.image && product.image.length > 0,
-      productImageUrl: product.images && product.images.length > 0 
-        ? `http://localhost:3001/uploads/products/${product.images[0].split('/').pop()}` 
-        : null,
+      productImageUrl: product.images && product.images.length > 0 ? product.images[0] : null, // Mega.nz URL
     };
 
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/api/placeOrder', {
-        method: 'POST',
+      const response = await axios.post(`${API_URL}/api/placeOrder`, orderData, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(orderData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Something went wrong!');
-      }
-
-      const result = await response.json();
-      setMessage(result.message || 'Order placed successfully!');
+      setMessage(response.data.message || 'Order placed successfully!');
       setTimeout(() => navigate('/'), 2000);
     } catch (error) {
-      setMessage(error.message || 'Failed to place order.');
+      setMessage(error.response?.data?.message || 'Failed to place order.');
       console.error('Order error:', error);
     } finally {
       setLoading(false);
@@ -101,7 +117,7 @@ const OrderPage = () => {
     }
   };
 
-  if (!product) {
+  if (!product && !message) {
     return <div className="text-center py-10">Loading product details...</div>;
   }
 
@@ -110,19 +126,29 @@ const OrderPage = () => {
       <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Order Page</h1>
 
       <div className="bg-white p-6 rounded-xl shadow-md mb-8 max-w-lg mx-auto">
-        {product.images && product.images.length > 0 ? (
-          <img
-            src={`http://localhost:3001/uploads/products/${product.images[0].split('/').pop()}`}
-            alt={product.name}
-            className="w-56 h-56 object-cover rounded-lg mx-auto mb-4"
-          />
+        {product?.images && product.images.length > 0 ? (
+          <div
+            ref={imageRef}
+            data-url={product.images[0]}
+            className="w-56 h-56 bg-gray-200 flex items-center justify-center rounded-lg mx-auto mb-4"
+          >
+            {imageData ? (
+              <img
+                src={imageData}
+                alt={product.name}
+                className="w-full h-full object-cover rounded-lg"
+              />
+            ) : (
+              <span className="text-gray-500">Loading...</span>
+            )}
+          </div>
         ) : (
           <div className="w-56 h-56 bg-gray-200 flex items-center justify-center rounded-lg mx-auto mb-4">
             <span className="text-gray-500">No image</span>
           </div>
         )}
-        <h2 className="text-2xl font-semibold text-center text-gray-800">{product.name}</h2>
-        <p className="text-lg text-center text-gray-600">Price: ${product.price}</p>
+        <h2 className="text-2xl font-semibold text-center text-gray-800">{product?.name || 'Unknown Product'}</h2>
+        <p className="text-lg text-center text-gray-600">Price: ${product?.price || 'N/A'}</p>
       </div>
 
       <div className="bg-white p-8 rounded-xl shadow-md max-w-2xl mx-auto">
@@ -168,10 +194,10 @@ const OrderPage = () => {
             <input
               type="text"
               value={sub_district}
-              onChange={(e) => setsub_district(e.target.value)}
+              onChange={(e) => setSubDistrict(e.target.value)}
               required
               className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-              placeholder="Enter your sub_district"
+              placeholder="Enter your sub district"
             />
           </div>
 

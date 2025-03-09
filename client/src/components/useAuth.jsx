@@ -1,4 +1,3 @@
-// useAuth.js (আলাদা ফাইল)
 import { useState, useEffect } from 'react';
 
 const useAuth = () => {

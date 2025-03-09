@@ -11,7 +11,7 @@ const MyOrders = () => {
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
-  // Fetch user's orders
+ 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -20,7 +20,7 @@ const MyOrders = () => {
         });
         setOrders(response.data);
       } catch (error) {
-        setOrders([]); // Ensure orders is an empty array when error occurs
+        setOrders([]); 
       } finally {
         setLoading(false);
       }
@@ -28,7 +28,7 @@ const MyOrders = () => {
     fetchOrders();
   }, [token]);
 
-  // Cancel an order
+  
   const markCancel = async (orderId) => {
     try {
       await axios.put(
@@ -50,10 +50,10 @@ const MyOrders = () => {
     }
   };
 
-  // Filter orders based on status
+  
   const filteredOrders = filter === 'All' ? orders : orders.filter((order) => order.status === filter);
 
-  // Navigate to products page
+ 
   const handleShopNow = () => {
     navigate('/products');
   };
@@ -64,7 +64,7 @@ const MyOrders = () => {
     <div className="max-w-6xl mx-auto px-4 py-6 min-h-screen bg-gray-100">
       <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 text-gray-800">My Orders</h2>
 
-      {/* Filter Buttons */}
+     
       <div className="flex flex-wrap justify-center space-x-2 sm:space-x-4 mb-6">
         {['All', 'Active', 'Pending', 'Cancelled'].map((status) => (
           <button

@@ -1,30 +1,36 @@
-const mega = require("mega");
-const fs = require("fs");
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-const megaStorage = mega({ email: "mahfujalamrony07@gmail.com", password: "MS4i=s+@U'5W%a}" });
+const uploadDir = path.join(__dirname, '../uploads/products');
 
-const uploadFile = (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ message: "No file uploaded or invalid file type!" });
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueName = `${Date.now()}-${file.originalname}`;
+        cb(null, uniqueName);
+    },
+});
+
+const fileFilter = (req, file, cb) => {
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only JPG, PNG, and WEBP images are allowed!'), false);
     }
-
-    const fileStream = fs.createReadStream(req.file.path);
-    megaStorage.upload(req.file.filename, fileStream, (err, file) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Error uploading to Mega!" });
-        }
-
-        // লোকাল ফাইল ডিলিট (ঐচ্ছিক)
-        fs.unlink(req.file.path, (unlinkErr) => {
-            if (unlinkErr) console.error("Error deleting local file:", unlinkErr);
-        });
-
-        res.status(200).json({
-            message: "File uploaded to Mega successfully!",
-            url: file.url,
-        });
-    });
 };
 
-module.exports = { uploadFile };
+const upload = multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+});
+
+module.exports = upload;

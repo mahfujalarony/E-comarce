@@ -1,46 +1,79 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+
+
+const imageCache = {};
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [imageDataMap, setImageDataMap] = useState(imageCache);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [zoomedImage, setZoomedImage] = useState(null);
+  const observerRefs = useRef({});
+  const API_URL = 'http://localhost:3001';
 
-  // Fetch product details and related products from API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch product details
-        const productResponse = await axios.get(`http://localhost:3001/api/products/${id}`);
+        const productResponse = await axios.get(`${API_URL}/api/products/${id}`);
         setProduct(productResponse.data);
 
-        // Fetch related products based on category
         const relatedResponse = await axios.get(
-          `http://localhost:3001/api/products?category=${productResponse.data.category}&limit=4`
+          `${API_URL}/api/products?category=${productResponse.data.category}&limit=4`
         );
-        // Filter out the current product from related products
         setRelatedProducts(relatedResponse.data.filter((p) => p._id !== productResponse.data._id));
       } catch (error) {
         console.error('Error fetching product details or related products:', error);
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, API_URL]);
 
-  // Check if token exists in localStorage
-  const checkToken = () => {
-    const token = localStorage.getItem('token');
-    return !!token;
+  const loadImage = async (url) => {
+    if (imageCache[url]) {
+      setImageDataMap((prev) => ({ ...prev, [url]: imageCache[url] }));
+      return;
+    }
+
+    try {
+      const res = await axios.get(`${API_URL}/api/image-data`, { params: { url } });
+      const imageData = res.data.imageData;
+      imageCache[url] = imageData;
+      setImageDataMap((prev) => ({ ...prev, [url]: imageData }));
+    } catch (error) {
+      console.error(`Error loading image for ${url}:`, error.response?.data || error.message);
+    }
   };
 
-  // Handle Order Now button click
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const url = entry.target.dataset.url;
+            loadImage(url);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '100px' }
+    );
+
+    Object.values(observerRefs.current).forEach((ref) => ref && observer.observe(ref));
+    return () => observer.disconnect();
+  }, [product, relatedProducts]);
+
+  const checkToken = () => {
+    return !!localStorage.getItem('token');
+  };
+
   const handleOrderNow = () => {
     if (checkToken()) {
       navigate(`/order/${id}`);
@@ -49,38 +82,31 @@ const ProductDetails = () => {
     }
   };
 
-  // Handle Add to Cart button click
   const handleAddToCart = () => {
     setIsCartModalOpen(true);
   };
 
-  // Handle image zoom
   const handleImageZoom = (img) => {
     setZoomedImage(img);
   };
 
-  // Close zoomed image
   const handleZoomClose = () => {
     setZoomedImage(null);
   };
 
-  // Redirect to login page from login modal
   const handleLoginRedirect = () => {
     setIsLoginModalOpen(false);
     navigate('/login');
   };
 
-  // Close login modal
   const handleLoginCancel = () => {
     setIsLoginModalOpen(false);
   };
 
-  // Close cart modal
   const handleCartCancel = () => {
     setIsCartModalOpen(false);
   };
 
-  // Handle click on related product
   const handleRelatedProductClick = (productId) => {
     navigate(`/get/${productId}`);
   };
@@ -90,23 +116,35 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 bg-gray-100 min-h-screen">
+    <div 
+      className="container mx-auto px-4 bg-gray-100 min-h-screen 
+                 pt-[calc(60px+1rem)] md:pt-6" 
+    >
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Product Images Section */}
-        <div className="w-full lg:w-1/2 bg-white p-4 rounded-lg shadow-md relative">
+       
+        <div className="w-full lg:w-1/2 bg-white p-4 rounded-lg shadow-md">
           {product.images && product.images.length > 0 ? (
             <Carousel showThumbs={true} infiniteLoop autoPlay className="rounded-lg">
               {product.images.map((img, index) => (
                 <div
                   key={index}
+                  ref={(el) => (observerRefs.current[`main-${index}`] = el)}
+                  data-url={img}
                   className="cursor-pointer"
-                  onClick={() => handleImageZoom(`http://localhost:3001/uploads/products/${img.split('/').pop()}`)}
+                  onClick={() => handleImageZoom(imageDataMap[img] || img)}
                 >
-                  <img
-                    src={`http://localhost:3001/uploads/products/${img.split('/').pop()}`}
-                    alt={`${product.name} - Image ${index + 1}`}
-                    className="object-contain h-64 sm:h-80 md:h-96 w-full rounded-lg hover:scale-105 transition-transform duration-300"
-                  />
+                  {imageDataMap[img] ? (
+                    <img
+                      src={imageDataMap[img]}
+                      alt={`${product.name} - Image ${index + 1}`}
+                      className="object-contain h-64 sm:h-80 md:h-96 w-full rounded-lg hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full h-64 sm:h-80 md:h-96 bg-gray-200 flex items-center justify-center rounded-lg">
+                      <div className="animate-pulse bg-gray-300 w-full h-full rounded-lg"></div>
+                    </div>
+                  )}
                 </div>
               ))}
             </Carousel>
@@ -117,7 +155,7 @@ const ProductDetails = () => {
           )}
         </div>
 
-        {/* Product Details Section */}
+     
         <div className="w-full lg:w-1/2 bg-white p-4 sm:p-6 rounded-lg shadow-md">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-2">{product.name}</h1>
           <div className="flex items-center mb-3">
@@ -143,7 +181,6 @@ const ProductDetails = () => {
             </p>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               className="w-full bg-yellow-500 text-white py-2 sm:py-3 rounded-md hover:bg-yellow-600 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed"
@@ -163,7 +200,7 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {/* Additional Information Section */}
+    
       <div className="mt-6 bg-white p-4 sm:p-6 rounded-lg shadow-md">
         <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">Product Details</h2>
         <ul className="list-disc pl-5 text-gray-700 text-sm sm:text-base space-y-2">
@@ -175,7 +212,7 @@ const ProductDetails = () => {
         </ul>
       </div>
 
-      {/* Related Products Section */}
+     
       <div className="mt-6 bg-white p-4 sm:p-6 rounded-lg shadow-md">
         <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 mb-4">
           Related Products
@@ -188,11 +225,22 @@ const ProductDetails = () => {
                 className="border rounded-lg p-4 hover:shadow-lg transition duration-300 cursor-pointer"
                 onClick={() => handleRelatedProductClick(relatedProduct._id)}
               >
-                <img
-                  src={`http://localhost:3001/uploads/products/${relatedProduct.images[0]?.split('/').pop()}`}
-                  alt={relatedProduct.name}
-                  className="w-full h-32 sm:h-40 object-contain rounded-md mb-2"
-                />
+                <div
+                  ref={(el) => (observerRefs.current[`related-${relatedProduct._id}`] = el)}
+                  data-url={relatedProduct.images[0]}
+                  className="w-full h-32 sm:h-40 bg-gray-200 flex items-center justify-center rounded-md mb-2"
+                >
+                  {imageDataMap[relatedProduct.images[0]] ? (
+                    <img
+                      src={imageDataMap[relatedProduct.images[0]]}
+                      alt={relatedProduct.name}
+                      className="w-full h-full object-contain rounded-md"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="animate-pulse bg-gray-300 w-full h-full rounded-md"></div>
+                  )}
+                </div>
                 <h3 className="text-sm sm:text-base font-semibold text-gray-800 truncate">
                   {relatedProduct.name}
                 </h3>
@@ -208,7 +256,7 @@ const ProductDetails = () => {
         )}
       </div>
 
-      {/* Zoomed Image Modal */}
+      
       {zoomedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 px-4"
@@ -230,7 +278,7 @@ const ProductDetails = () => {
         </div>
       )}
 
-      {/* Login Modal */}
+     
       {isLoginModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-sm">
@@ -256,7 +304,7 @@ const ProductDetails = () => {
         </div>
       )}
 
-      {/* Add to Cart Unavailable Modal */}
+
       {isCartModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-sm">

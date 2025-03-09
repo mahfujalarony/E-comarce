@@ -13,7 +13,7 @@ const CreateProduct = () => {
     const [imageFiles, setImageFiles] = useState([]);
     const [previews, setPreviews] = useState([]);
 
-    // Predefined categories for dropdown
+    
     const categories = [
         "Electronics",
         "Fashion",
@@ -26,12 +26,12 @@ const CreateProduct = () => {
         "Others",
     ];
 
-    // Handle text input changes
+  
     const handleChange = (e) => {
         setProduct({ ...product, [e.target.name]: e.target.value });
     };
 
-    // Handle multiple image selection
+ 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         setImageFiles((prevFiles) => [...prevFiles, ...files]);
@@ -39,7 +39,7 @@ const CreateProduct = () => {
         setPreviews((prevPreviews) => [...prevPreviews, ...newPreviewUrls]);
     };
 
-    // Remove selected image
+    
     const removeImage = (index) => {
         const newFiles = imageFiles.filter((_, i) => i !== index);
         const newPreviews = previews.filter((_, i) => i !== index);

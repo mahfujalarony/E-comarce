@@ -11,7 +11,7 @@ import AdminDashboard from './components/AdminDeshboard';
 import { AuthProvider } from './components/AuthContext';
 import CreateProduct from './components/Admin/CreateProduct';
 import ProductDetails from './components/ProductDetails';
-import ProductPage from './components/ProductPage'; // ProductPage ইমপোর্ট করা হয়েছে
+import ProductPage from './components/ProductPage'; 
 import OrderPage from './components/OrderPage';
 import PymentPage from './components/PymentPage';
 import Profile from './components/Profile';
@@ -35,7 +35,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/products" element={<ProductPage />} /> {/* ProductPage যোগ করা হয়েছে */}
+              <Route path="/products" element={<ProductPage />} /> 
               <Route path="/get/:id" element={<ProductDetails />} />
               <Route path="/order/:id" element={<OrderPage />} />
               <Route path="/pyment/:id" element={<PymentPage />} />
