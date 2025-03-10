@@ -28,7 +28,7 @@ const Login = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login', data, {
+      const response = await axios.post('https://e-comarce-iuno.vercel.app/api/auth/login', data, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -51,7 +51,7 @@ const Login = () => {
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">ইমেইল:</label>
+            <label className="block text-sm font-medium text-gray-700">Email:</label>
             <input
               type="email"
               placeholder="Email"
