@@ -14,29 +14,36 @@ const imageCache = new Map();
 
 exports.createProduct = async (req, res) => {
   try {
+    console.log('Starting createProduct...');
     const { name, description, price, stock, category, brand } = req.body;
     const files = req.files;
+    console.log('Received body:', req.body);
+    console.log('Received files:', files);
 
     if (!files || files.length === 0) {
+      console.log('No images uploaded');
       return res.status(400).json({ error: 'No images uploaded' });
     }
 
+    console.log('Connecting to Mega.nz...');
     const storage = new Storage({
       email: process.env.MEGA_EMAIL,
       password: process.env.MEGA_PASSWORD,
     });
     await storage.ready;
+    console.log('Mega.nz connected');
 
     let productsFolder = storage.root.children.find(
       (child) => child.name === 'Products' && child.directory
     );
     if (!productsFolder) {
+      console.log('Creating Products folder...');
       productsFolder = await storage.mkdir({ name: 'Products' });
     }
 
     const imageLinks = [];
     for (const file of files) {
-     
+      console.log('Uploading file:', file.originalname);
       const uploadOptions = {
         name: `${Date.now()}-${file.originalname}`,
         allowUploadBuffering: true,
@@ -44,22 +51,26 @@ exports.createProduct = async (req, res) => {
       const uploadedFile = await productsFolder.upload(uploadOptions, file.buffer).complete;
       const fileLink = await uploadedFile.link();
       imageLinks.push(fileLink);
+      console.log('File uploaded:', fileLink);
     }
 
     const product = new Product({
       name,
       description,
-      price,
-      stock,
+      price: parseFloat(price), // স্ট্রিং থেকে নম্বরে কনভার্ট
+      stock: parseInt(stock),   // স্ট্রিং থেকে ইন্টিজারে কনভার্ট
       category,
       brand,
       images: imageLinks,
     });
+    console.log('Saving product to MongoDB...');
     await product.save();
+    console.log('Product saved');
+
     res.status(201).json({ message: 'Product created successfully!', product });
   } catch (error) {
-    console.error('Error in createProduct:', error.message);
-    res.status(500).json({ error: 'Failed to create product.' });
+    console.error('Error in createProduct:', error.message, error.stack);
+    res.status(500).json({ error: 'Failed to create product.', details: error.message });
   }
 };
 
