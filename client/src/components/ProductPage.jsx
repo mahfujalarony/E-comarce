@@ -14,7 +14,7 @@ const ProductPage = () => {
   const { user } = useContext(AuthContext);
   const userId = user?.userId || JSON.parse(localStorage.getItem("user"))?.userId || "";
   const location = useLocation();
-  const API_URL = 'http://localhost:3001';
+  const API_URL = 'https://e-comarce-iuno.vercel.app/';
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
   const bottomSentinel = useRef(null);
@@ -104,7 +104,7 @@ const ProductPage = () => {
     return () => observer.disconnect();
   }, [products]);
 
-  // নিচে স্ক্রল করলে লোড
+  
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
