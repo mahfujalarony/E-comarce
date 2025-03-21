@@ -8,7 +8,7 @@ const UserList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/api/users", {
+        const response = await axios.get("https://e-comarce-iuno.vercel.app/api/users", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setUsers(response.data);
@@ -26,7 +26,7 @@ const UserList = () => {
   const makeAdmin = async (email) => {
     try {
       await axios.put(
-        "http://localhost:3001/api/users/make-admin",
+        "https://e-comarce-iuno.vercel.app/api/users/make-admin",
         { email },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -46,7 +46,7 @@ const UserList = () => {
   const removeAdmin = async (email) => {
     try {
       await axios.put(
-        "http://localhost:3001/api/users/remove-admin",
+        "https://e-comarce-iuno.vercel.app/api/users/remove-admin",
         { email },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -65,7 +65,7 @@ const UserList = () => {
 
   const removeUser = async (email) => {
     try {
-      await axios.delete("http://localhost:3001/api/users/delete-user", {
+      await axios.delete("https://e-comarce-iuno.vercel.app/api/users/delete-user", {
         data: { email },
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });

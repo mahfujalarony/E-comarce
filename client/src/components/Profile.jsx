@@ -37,7 +37,7 @@ const ProfilePage = () => {
       (entries) => {
         if (entries[0].isIntersecting) {
           axios
-            .get("http://localhost:3001/api/auth/image-data", {
+            .get("https://e-comarce-iuno.vercel.app/api/auth/image-data", {
               params: { url: profileData.photoPath },
             })
             .then((res) => setImageData(res.data.imageData))

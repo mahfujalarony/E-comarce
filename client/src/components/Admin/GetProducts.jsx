@@ -7,7 +7,7 @@ const ProductList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/api/products");
+        const response = await axios.get("https://e-comarce-iuno.vercel.app/api/products");
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -31,7 +31,7 @@ const ProductList = () => {
            
             {product.images && product.images.length > 0 && (
               <img
-                src={`http://localhost:3001/uploads/products/${product.images[0].split("/").pop()}`}
+                src={`https://e-comarce-iuno.vercel.app/uploads/products/${product.images[0].split("/").pop()}`}
                 alt={product.name}
                 className="w-full h-48 object-cover"
               />

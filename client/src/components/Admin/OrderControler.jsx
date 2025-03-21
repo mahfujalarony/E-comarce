@@ -6,7 +6,7 @@ const OrderController = () => {
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [filter, setFilter] = useState("all");
   const [imageDataMap, setImageDataMap] = useState({});
-  const API_URL =  "http://localhost:3001";
+  const API_URL =  "https://e-comarce-iuno.vercel.app";
 
   
   useEffect(() => {

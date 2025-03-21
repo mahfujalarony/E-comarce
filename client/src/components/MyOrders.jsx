@@ -15,7 +15,7 @@ const MyOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/myOrders', {
+        const response = await axios.get('https://e-comarce-iuno.vercel.app/api/myOrders', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOrders(response.data);
@@ -32,7 +32,7 @@ const MyOrders = () => {
   const markCancel = async (orderId) => {
     try {
       await axios.put(
-        `http://localhost:3001/api/myOrders/${orderId}`,
+        `https://e-comarce-iuno.vercel.app/api/myOrders/${orderId}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
