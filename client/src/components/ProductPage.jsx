@@ -13,7 +13,7 @@ const ProductPage = () => {
   const { user } = useContext(AuthContext);
   const userId = user?.userId || JSON.parse(localStorage.getItem("user"))?.userId || "";
   const location = useLocation();
-  const API_URL = 'http://localhost:3001' || 'https://e-comarce-iuno.vercel.app/';
+  const API_URL =  'https://e-comarce-iuno.vercel.app/';
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
   const bottomSentinel = useRef(null);
