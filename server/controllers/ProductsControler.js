@@ -33,8 +33,8 @@ exports.createProduct = async (req, res) => {
 
     console.log('Connecting to Mega.nz...');
     const storage = new Storage({
-      email: 'mahfujalamrony07@gmail.com', 
-      password: "MS4i=s+@U'5W%a}",
+      email: process.env.MEGA_EMAIL, 
+      password: process.env.MEGA_PASSWORD,
     });
 
     await storage.ready;
