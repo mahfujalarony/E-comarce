@@ -17,7 +17,7 @@ const ProductDetails = () => {
   const [zoomedImage, setZoomedImage] = useState(null);
   const [initialLoadingDelay, setInitialLoadingDelay] = useState(true); // নতুন স্টেট
   const observerRefs = useRef({});
-  const API_URL = 'http://localhost:3001';
+  const API_URL = 'https://e-comarce-iuno.vercel.app';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,22 +32,22 @@ const ProductDetails = () => {
       } catch (error) {
         console.error('Error fetching product details or related products:', error);
       } finally {
-        setInitialLoadingDelay(false); // ডেটা আসার পর ডিলে বন্ধ
+        setInitialLoadingDelay(false); 
       }
     };
 
-    setProduct(null); // রিসেট
+    setProduct(null); 
     setRelatedProducts([]);
-    setInitialLoadingDelay(true); // প্রতিবার নতুন ID-তে রিসেট
+    setInitialLoadingDelay(true);
 
-    // ৫ সেকেন্ড টাইমার
+   
     const timer = setTimeout(() => {
       setInitialLoadingDelay(false);
     }, 5000);
 
     fetchData();
 
-    // ক্লিনআপ ফাংশন
+   
     return () => clearTimeout(timer);
   }, [id, API_URL]);
 
@@ -126,7 +126,7 @@ const ProductDetails = () => {
     navigate(`/get/${productId}`);
   };
 
-  // স্কেলেটন লোডার কম্পোনেন্ট
+  
   const SkeletonLoader = () => (
     <div className="flex flex-col lg:flex-row gap-6 animate-fadeIn">
       <div className="w-full lg:w-1/2 bg-white p-4 rounded-lg shadow-md">

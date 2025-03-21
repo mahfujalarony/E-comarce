@@ -61,7 +61,7 @@ const CreateProduct = () => {
             });
 
             const response = await axios.post(
-                "http://localhost:3001/api/products",
+                "https://e-comarce-iuno.vercel.app/api/products",
                 formData,
                 {
                     headers: { "Content-Type": "multipart/form-data" },
@@ -236,7 +236,7 @@ const CreateProduct = () => {
                     </button>
                 </form>
 
-                {/* পপআপ মডাল */}
+                
                 {showPopup && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
