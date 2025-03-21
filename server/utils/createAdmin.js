@@ -1,4 +1,4 @@
-const User = require('../models/userModel'); // ইউজার মডেল ইমপোর্ট করো
+const User = require('../models/userModel'); 
 
 const createDefaultAdmin = async () => {
   try {
