@@ -12,10 +12,14 @@ const CreateProduct = () => {
     });
     const [imageFiles, setImageFiles] = useState([]);
     const [previews, setPreviews] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
 
-    
     const categories = [
         "Electronics",
+        "Mobiles",
+        "Laptops",
+        "Bykes",
         "Fashion",
         "Home & Kitchen",
         "Beauty",
@@ -26,12 +30,10 @@ const CreateProduct = () => {
         "Others",
     ];
 
-  
     const handleChange = (e) => {
         setProduct({ ...product, [e.target.name]: e.target.value });
     };
 
- 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         setImageFiles((prevFiles) => [...prevFiles, ...files]);
@@ -39,7 +41,6 @@ const CreateProduct = () => {
         setPreviews((prevPreviews) => [...prevPreviews, ...newPreviewUrls]);
     };
 
-    
     const removeImage = (index) => {
         const newFiles = imageFiles.filter((_, i) => i !== index);
         const newPreviews = previews.filter((_, i) => i !== index);
@@ -49,6 +50,7 @@ const CreateProduct = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             const formData = new FormData();
             Object.keys(product).forEach((key) => {
@@ -59,14 +61,15 @@ const CreateProduct = () => {
             });
 
             const response = await axios.post(
-                "https://e-comarce-iuno.vercel.app/api/products",
+                "http://localhost:3001/api/products",
                 formData,
                 {
                     headers: { "Content-Type": "multipart/form-data" },
                 }
             );
 
-            alert("Product created successfully!");
+         
+            setShowPopup(true);
             setProduct({
                 name: "",
                 description: "",
@@ -80,12 +83,19 @@ const CreateProduct = () => {
             console.log(response.data);
         } catch (error) {
             console.error("Error creating product:", error);
+            alert("Failed to create product: " + error.message); 
+        } finally {
+            setLoading(false); 
         }
+    };
+
+    const closePopup = () => {
+        setShowPopup(false); 
     };
 
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl w-full bg-white p-8 rounded-lg shadow-lg">
+            <div className="max-w-2xl w-full bg-white p-8 rounded-lg shadow-lg relative">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
                     Create New Product
                 </h2>
@@ -171,10 +181,7 @@ const CreateProduct = () => {
                         />
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                             {previews.map((preview, index) => (
-                                <div
-                                    key={index}
-                                    className="relative group"
-                                >
+                                <div key={index} className="relative group">
                                     <img
                                         src={preview}
                                         alt={`preview-${index}`}
@@ -194,11 +201,60 @@ const CreateProduct = () => {
 
                     <button
                         type="submit"
-                        className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                        disabled={loading} 
+                        className={`w-full py-3 text-white font-semibold rounded-lg transition-colors ${
+                            loading ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+                        }`}
                     >
-                        Create Product
+                        {loading ? (
+                            <span className="flex items-center justify-center">
+                                <svg
+                                    className="animate-spin h-5 w-5 mr-2 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                    />
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"
+                                    />
+                                </svg>
+                                Creating...
+                            </span>
+                        ) : (
+                            "Create Product"
+                        )}
                     </button>
                 </form>
+
+                {/* পপআপ মডাল */}
+                {showPopup && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+                            <h3 className="text-lg font-semibold text-green-600">
+                                Success!
+                            </h3>
+                            <p className="text-gray-700 mt-2">
+                                Product created successfully!
+                            </p>
+                            <button
+                                onClick={closePopup}
+                                className="mt-4 w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

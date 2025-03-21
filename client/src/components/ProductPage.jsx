@@ -10,11 +10,10 @@ const ProductPage = () => {
   const [imageDataMap, setImageDataMap] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
   const userId = user?.userId || JSON.parse(localStorage.getItem("user"))?.userId || "";
   const location = useLocation();
-  const API_URL = 'https://e-comarce-iuno.vercel.app/';
+  const API_URL = 'http://localhost:3001' || 'https://e-comarce-iuno.vercel.app/';
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
   const bottomSentinel = useRef(null);
@@ -30,9 +29,6 @@ const ProductPage = () => {
   }, [searchQuery]);
 
   const fetchProducts = async (pageToFetch, reset = false) => {
-    if (loading) return;
-    setLoading(true);
-
     try {
       const response = await axios.get(`${API_URL}/api/products`, {
         params: { page: pageToFetch, limit: PRODUCTS_PER_PAGE, search: searchQuery },
@@ -57,7 +53,6 @@ const ProductPage = () => {
 
         setProducts(prev => {
           const newProducts = reset ? fetchedProducts : [...prev, ...fetchedProducts];
-         
           const uniqueProducts = Array.from(
             new Map(newProducts.map(product => [product._id, product])).values()
           );
@@ -70,11 +65,8 @@ const ProductPage = () => {
     } catch (error) {
       console.error('Error fetching products:', error);
       if (reset) setProducts([]);
-    } finally {
-      setLoading(false);
     }
   };
-
 
   const loadImage = async (url) => {
     if (imageDataMap[url]) return;
@@ -104,22 +96,21 @@ const ProductPage = () => {
     return () => observer.disconnect();
   }, [products]);
 
-  
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && currentPage < totalPages && !loading) {
+        if (entries[0].isIntersecting && currentPage < totalPages) {
           const nextPage = currentPage + 1;
           console.log(`Triggering load for page ${nextPage}`);
-          fetchProducts(nextPage);
+          fetchProducts(nextPage); // সেমিকোলন যোগ
         }
       },
       { root: scrollContainerRef.current, rootMargin: '0px 0px 200px 0px', threshold: 0.1 }
     );
 
-    if (bottomSentinel.current) observer.observe(bottomSentinel.current);
+    if (bottomSentinel.current) observer.observe(bottomSentinel.current); // 'bottomSentinel' ঠিক করা
     return () => observer.disconnect();
-  }, [currentPage, totalPages, loading]);
+  }, [currentPage, totalPages]);
 
   const handleAddToCart = async (productId) => {
     if (!userId) {
@@ -147,21 +138,39 @@ const ProductPage = () => {
       className="container mx-auto px-4 py-8 bg-gray-100 overflow-y-auto"
       style={{ maxHeight: '100vh' }}
     >
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .animate-fadeIn {
+            animation: fadeIn 0.5s ease-in-out forwards;
+          }
+          @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+          }
+          .shimmer {
+            background: linear-gradient(to right, #f0f0f0 0%, #e0e0e0 20%, #f0f0f0 40%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+          }
+        `}
+      </style>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {products.length === 0 && !loading ? (
-          <p className="col-span-full text-center">No products found</p>
-        ) : (
+        {products.length !== 0 ? (
           products.map((product) => (
             <div
               key={product._id}
-              className="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden"
+              className="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden opacity-0 animate-fadeIn"
             >
               <Link to={`/get/${product._id}`} className="no-underline text-gray-800 cursor-pointer">
                 {product.images && product.images.length > 0 && (
                   <div
                     ref={el => productRefs.current[product._id] = el}
                     data-url={product.images[0]}
-                    className="w-full h-40 md:h-48 lg:h-56 bg-gray-200 flex items-center justify-center"
+                    className="w-full h-40 md:h-48 lg:h-56 bg-gray-200 flex items-center justify-center relative"
                   >
                     {imageDataMap[product.images[0]] ? (
                       <img
@@ -170,7 +179,7 @@ const ProductPage = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <p>Loading...</p>
+                      <div className="w-full h-full shimmer" />
                     )}
                   </div>
                 )}
@@ -196,14 +205,36 @@ const ProductPage = () => {
               </button>
             </div>
           ))
+        ) : (
+          <div className="col-span-full flex flex-col items-center justify-center py-12 bg-white rounded-lg shadow-md">
+            <svg
+              className="w-16 h-16 text-gray-400 mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M3 3h18M9 3v18m6-18v18M3 9h18M3 15h18"
+              />
+            </svg>
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">No Products Found</h2>
+            <p className="text-gray-500 text-center max-w-md">
+              It looks like we couldn't find any products matching your search. Try adjusting your filters or check back later!
+            </p>
+            <Link
+              to="/"
+              className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Back to Home
+            </Link>
+          </div>
         )}
       </div>
-
-      {loading && (
-        <p className="text-center py-4">Loading more products...</p>
-      )}
       <div ref={bottomSentinel} style={{ height: '10px' }}></div>
-
       <ToastContainer />
     </div>
   );
