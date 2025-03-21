@@ -6,7 +6,7 @@ import { AuthContext } from './AuthContext';
 const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // New state for logout confirmation
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); 
   const { user, isLoggedIn, logout } = useContext(AuthContext);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();

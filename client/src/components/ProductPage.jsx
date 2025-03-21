@@ -13,7 +13,7 @@ const ProductPage = () => {
   const { user } = useContext(AuthContext);
   const userId = user?.userId || JSON.parse(localStorage.getItem("user"))?.userId || "";
   const location = useLocation();
-  const API_URL =  'https://e-comarce-iuno.vercel.app/';
+  const API_URL =  'https://e-comarce-iuno.vercel.app';
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
   const bottomSentinel = useRef(null);
@@ -102,13 +102,13 @@ const ProductPage = () => {
         if (entries[0].isIntersecting && currentPage < totalPages) {
           const nextPage = currentPage + 1;
           console.log(`Triggering load for page ${nextPage}`);
-          fetchProducts(nextPage); // সেমিকোলন যোগ
+          fetchProducts(nextPage);
         }
       },
       { root: scrollContainerRef.current, rootMargin: '0px 0px 200px 0px', threshold: 0.1 }
     );
 
-    if (bottomSentinel.current) observer.observe(bottomSentinel.current); // 'bottomSentinel' ঠিক করা
+    if (bottomSentinel.current) observer.observe(bottomSentinel.current); 
     return () => observer.disconnect();
   }, [currentPage, totalPages]);
 
