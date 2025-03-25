@@ -198,6 +198,7 @@ const ProductPage = () => {
               </Link>
               <button
                 onClick={() => handleAddToCart(product._id)}
+                
                 disabled={product.stock <= 0}
                 className={`mt-4 w-full py-2 rounded-md text-white transition-colors duration-300 ${
                   product.stock <= 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'

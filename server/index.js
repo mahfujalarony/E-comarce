@@ -22,7 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', productsRoutes); 
 app.use('/api/orders', orderRoutes);    
-app.use('/api/cart', cartRoutes);         
+app.use('/api', cartRoutes);         
 
 
 let isConnected = false;
