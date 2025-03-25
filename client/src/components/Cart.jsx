@@ -24,6 +24,7 @@ const Cart = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setCart(response.data);
+      console.log('data', response.data);
     } catch (error) {
       console.error('Error fetching cart:', error);
       setCart({ items: [], total: 0 }); 

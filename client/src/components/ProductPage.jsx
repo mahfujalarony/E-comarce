@@ -11,7 +11,9 @@ const ProductPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const { user } = useContext(AuthContext);
-  const userId = user?.userId || JSON.parse(localStorage.getItem("user"))?.userId || "";
+  const userId = user?._id || JSON.parse(localStorage.getItem("user"))?._id || "";
+
+
   const location = useLocation();
    const API_URL =  'https://e-comarce-iuno.vercel.app';
    //const API_URL = 'https://e-comarce-iuno.vercel.app'
