@@ -161,7 +161,7 @@ const ProductPage = () => {
         `}
       </style>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {products.length !== 0 ? (
+        {
           products.map((product) => (
             <div
               key={product._id}
@@ -207,34 +207,7 @@ const ProductPage = () => {
               </button>
             </div>
           ))
-        ) : (
-          <div className="col-span-full flex flex-col items-center justify-center py-12 bg-white rounded-lg shadow-md">
-            <svg
-              className="w-16 h-16 text-gray-400 mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M3 3h18M9 3v18m6-18v18M3 9h18M3 15h18"
-              />
-            </svg>
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">No Products Found</h2>
-            <p className="text-gray-500 text-center max-w-md">
-              It looks like we couldn't find any products matching your search. Try adjusting your filters or check back later!
-            </p>
-            <Link
-              to="/"
-              className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Back to Home
-            </Link>
-          </div>
-        )}
+         }
       </div>
       <div ref={bottomSentinel} style={{ height: '10px' }}></div>
       <ToastContainer />
