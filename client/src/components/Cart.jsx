@@ -10,7 +10,7 @@ const Cart = () => {
   const [imageDataMap, setImageDataMap] = useState({});
   const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
-  const userId = user?.userId || JSON.parse(localStorage.getItem('user'))?.userId || '';
+  const userId = user?._id || JSON.parse(localStorage.getItem('user'))?._id || '';
   const navigate = useNavigate();
   const API_URL = 'https://e-comarce-iuno.vercel.app';
   const observerRefs = useRef({});
