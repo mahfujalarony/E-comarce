@@ -1,18 +1,20 @@
-
-
 const { Storage, File } = require('megajs');
 const Product = require('../models/ProductModel');
 const fs = require('fs');
 const path = require('path');
-const mega = require('megajs');
+const crypto = require('crypto');
 require('dotenv').config();
 
-if (!global.crypto) {
-  global.crypto = {};
+// crypto.getRandomValues ফিক্স
+if (!global.crypto || !global.crypto.getRandomValues) {
+  global.crypto = {
+    getRandomValues: (array) => {
+      const bytes = crypto.randomBytes(array.length);
+      array.set(bytes);
+      return array;
+    },
+  };
 }
-global.crypto.getRandomValues = function (array) {
-  return require('crypto').webcrypto.getRandomValues(array);
-};
 
 const imageCache = new Map();
 
@@ -31,23 +33,22 @@ exports.createProduct = async (req, res) => {
 
     console.log('Connecting to Mega.nz...');
     const storage = new Storage({
-      email: 'mahfujalamrony07@gmail.com',
-      password: "MS4i=s+@U'5W%a}",
+      email: process.env.MEGA_EMAIL, 
+      password: process.env.MEGA_PASSWORD,
     });
 
     await storage.ready;
     console.log('Mega.nz connected');
 
-
     let productsFolder = storage.root.children.find(
       (child) => child.name === 'Products' && child.directory
     );
-    console.log('productsfolder:', productsFolder);
+    console.log('productsfolder:', { name: productsFolder?.name, nodeId: productsFolder?.nodeId });
 
     if (!productsFolder) {
       console.log('Creating Products folder...');
       productsFolder = await storage.mkdir({ name: 'Products' });
-      console.log('created productsfolder:', productsFolder);
+      console.log('created productsfolder:', { name: productsFolder.name, nodeId: productsFolder.nodeId });
     }
 
     const imageLinks = [];
@@ -84,6 +85,7 @@ exports.createProduct = async (req, res) => {
   }
 };
 
+// বাকি ফাংশনগুলো (getProducts, getProductById, getImageData) একই থাকবে
 exports.getProducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -139,7 +141,6 @@ exports.getImageData = async (req, res) => {
       return res.status(400).json({ error: 'Invalid Mega.nz URL' });
     }
 
-    // Mega.nz-এ লগইন
     const storage = new Storage({
       email: process.env.MEGA_EMAIL,
       password: process.env.MEGA_PASSWORD,
@@ -150,9 +151,8 @@ exports.getImageData = async (req, res) => {
     const file = File.fromURL(url);
     await file.loadAttributes();
 
-    // Windows-এর জন্য সঠিক পথ
-    const tmpDir = 'C:/tmp'; // অথবা path.join(__dirname, 'tmp')
-    await fs.promises.mkdir(tmpDir, { recursive: true }); // ফোল্ডার তৈরি
+    const tmpDir = 'C:/tmp'; // Vercel-এ /tmp ব্যবহার করো
+    await fs.promises.mkdir(tmpDir, { recursive: true });
     const downloadPath = path.join(tmpDir, `${Date.now()}-temp.jpg`);
     const downloadStream = fs.createWriteStream(downloadPath);
 
@@ -165,7 +165,7 @@ exports.getImageData = async (req, res) => {
     const mimeType = 'image/jpeg';
     const dataUrl = `data:${mimeType};base64,${base64Image}`;
 
-    fs.unlinkSync(downloadPath); // টেম্প ফাইল মুছে ফেলা
+    fs.unlinkSync(downloadPath);
     imageCache.set(url, dataUrl);
 
     res.json({ success: true, imageData: dataUrl });
@@ -174,47 +174,5 @@ exports.getImageData = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch image data', details: error.message });
   }
 };
-
-
-// exports.getImageData = async (req, res) => {
-//   try {
-//     const { url } = req.query;
-//     if (!url) {
-//       return res.status(400).json({ error: 'URL is required' });
-//     }
-//     console.log('Received URL:', url);
-
-//     if (imageCache.has(url)) {
-//       return res.json({ success: true, imageData: imageCache.get(url) });
-//     }
-
-//     if (!url.startsWith('https://mega.nz/')) {
-//       return res.status(400).json({ error: 'Invalid Mega.nz URL' });
-//     }
-
-//     const file = File.fromURL(url);
-//     await file.loadAttributes();
-
-//     const downloadPath = path.join('/tmp', `${Date.now()}-temp.jpg`);
-//     const downloadStream = fs.createWriteStream(downloadPath);
-
-//     await new Promise((resolve, reject) => {
-//       file.download().pipe(downloadStream).on('finish', resolve).on('error', reject);
-//     });
-
-//     const fileBuffer = fs.readFileSync(downloadPath);
-//     const base64Image = fileBuffer.toString('base64');
-//     const mimeType = 'image/jpeg';
-//     const dataUrl = `data:${mimeType};base64,${base64Image}`;
-
-//     fs.unlinkSync(downloadPath); 
-//     imageCache.set(url, dataUrl);
-
-//     res.json({ success: true, imageData: dataUrl });
-//   } catch (error) {
-//     console.error('Error in getImageData:', error.message);
-//     res.status(500).json({ error: 'Internal server error.' });
-//   }
-// };
 
 module.exports = exports;
