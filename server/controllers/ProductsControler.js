@@ -133,7 +133,9 @@ exports.getImageData = async (req, res) => {
     }
     console.log('Received URL:', url);
 
+    // ক্যাশে চেক করা
     if (imageCache.has(url)) {
+      console.log('Serving from cache');
       return res.json({ success: true, imageData: imageCache.get(url) });
     }
 
@@ -141,6 +143,7 @@ exports.getImageData = async (req, res) => {
       return res.status(400).json({ error: 'Invalid Mega.nz URL' });
     }
 
+    // Mega.nz সংযোগ
     const storage = new Storage({
       email: process.env.MEGA_EMAIL,
       password: process.env.MEGA_PASSWORD,
@@ -150,27 +153,28 @@ exports.getImageData = async (req, res) => {
 
     const file = File.fromURL(url);
     await file.loadAttributes();
+    console.log('File attributes loaded:', file.name);
 
-    const tmpDir = 'C:/tmp'; // Vercel-এ /tmp ব্যবহার করো
-    await fs.promises.mkdir(tmpDir, { recursive: true });
-    const downloadPath = path.join(tmpDir, `${Date.now()}-temp.jpg`);
-    const downloadStream = fs.createWriteStream(downloadPath);
-
-    await new Promise((resolve, reject) => {
-      file.download().pipe(downloadStream).on('finish', resolve).on('error', reject);
+    // ফাইল সিস্টেমের পরিবর্তে Buffer-এ ডাউনলোড
+    const fileBuffer = await new Promise((resolve, reject) => {
+      file.download((err, data) => {
+        if (err) return reject(err);
+        resolve(data);
+      });
     });
 
-    const fileBuffer = fs.readFileSync(downloadPath);
+    // Base64 তৈরি
     const base64Image = fileBuffer.toString('base64');
-    const mimeType = 'image/jpeg';
+    const mimeType = 'image/jpeg'; // ফাইল টাইপ যাচাই করা উচিত
     const dataUrl = `data:${mimeType};base64,${base64Image}`;
 
-    fs.unlinkSync(downloadPath);
+    // ক্যাশে সংরক্ষণ
     imageCache.set(url, dataUrl);
+    console.log('Image processed and cached');
 
     res.json({ success: true, imageData: dataUrl });
   } catch (error) {
-    console.error('Error in getImageData:', error.message, error.code);
+    console.error('Error in getImageData:', error.message, error.stack);
     res.status(500).json({ error: 'Failed to fetch image data', details: error.message });
   }
 };
