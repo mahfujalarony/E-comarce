@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import axios from 'axios';
-// import { AuthContext } from './AuthContext';
 import { AuthContext } from '../AuthContext';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -9,24 +8,52 @@ const RemoveProduct = () => {
   const [products, setProducts] = useState([]);
   const [imageDataMap, setImageDataMap] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const { user } = useContext(AuthContext);
-  const API_URL = 'https://e-comarce-iuno.vercel.app';
+  const API_URL = 'http://localhost:3001'; // অথবা 'https://e-comarce-iuno.vercel.app'
+  const PRODUCTS_PER_PAGE = 10;
 
- 
   const isAdmin = user?.role === 'admin';
+  const bottomSentinel = useRef(null);
+  const scrollContainerRef = useRef(null);
 
   useEffect(() => {
-    fetchProducts();
+    setProducts([]);
+    setCurrentPage(1);
+    setTotalPages(1);
+    fetchProducts(1, true);
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (pageToFetch, reset = false) => {
     setIsLoading(true);
     try {
       const response = await axios.get(`${API_URL}/api/products`, {
+        params: { page: pageToFetch, limit: PRODUCTS_PER_PAGE },
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
+
+      console.log(`Fetching page ${pageToFetch} - Response:`, response.data);
+
       const fetchedProducts = response.data.products || response.data;
-      setProducts(fetchedProducts);
+      const total = response.data.total || fetchedProducts.length;
+
+      if (fetchedProducts.length === 0 && total === 0) {
+        setProducts([]);
+        setTotalPages(1);
+      } else {
+        setTotalPages(Math.ceil(total / PRODUCTS_PER_PAGE));
+        setProducts(prev => {
+          const newProducts = reset ? fetchedProducts : [...prev, ...fetchedProducts];
+          const uniqueProducts = Array.from(
+            new Map(newProducts.map(product => [product._id, product])).values()
+          );
+          console.log(`Page ${pageToFetch} - Unique products:`, uniqueProducts);
+          return uniqueProducts;
+        });
+
+        if (!reset) setCurrentPage(pageToFetch);
+      }
     } catch (error) {
       console.error('Error fetching products:', error);
       toast.error('Failed to load products.', { position: 'top-right', autoClose: 2000 });
@@ -53,6 +80,22 @@ const RemoveProduct = () => {
     });
   }, [products]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && currentPage < totalPages) {
+          const nextPage = currentPage + 1;
+          console.log(`Triggering load for page ${nextPage}`);
+          fetchProducts(nextPage);
+        }
+      },
+      { root: scrollContainerRef.current, rootMargin: '0px 0px 200px 0px', threshold: 0.1 }
+    );
+
+    if (bottomSentinel.current) observer.observe(bottomSentinel.current);
+    return () => observer.disconnect();
+  }, [currentPage, totalPages]);
+
   const handleRemoveProduct = async (productId) => {
     if (!isAdmin) {
       toast.error('Only admins can remove products!', { position: 'top-right', autoClose: 2000 });
@@ -66,7 +109,7 @@ const RemoveProduct = () => {
       await axios.delete(`${API_URL}/api/products/${productId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      console.log('productId', productId);
+      console.log('Removed product ID:', productId);
       setProducts((prev) => prev.filter((product) => product._id !== productId));
       toast.success('Product removed successfully!', { position: 'top-right', autoClose: 2000 });
     } catch (error) {
@@ -78,9 +121,13 @@ const RemoveProduct = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-gray-100">
+    <div
+      ref={scrollContainerRef}
+      className="container mx-auto px-4 py-8 bg-gray-100 overflow-y-auto"
+      style={{ maxHeight: '100vh' }}
+    >
       <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Remove Products</h2>
-      {isLoading && (
+      {isLoading && products.length === 0 && (
         <div className="flex justify-center">
           <svg
             className="animate-spin h-8 w-8 text-indigo-600"
@@ -146,6 +193,7 @@ const RemoveProduct = () => {
           </div>
         ))}
       </div>
+      <div ref={bottomSentinel} style={{ height: '10px' }}></div>
       <ToastContainer />
     </div>
   );
