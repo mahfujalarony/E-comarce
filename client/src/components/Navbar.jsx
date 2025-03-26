@@ -35,17 +35,10 @@ const Navbar = () => {
   };
 
 
-  // const handleProfileClick = () => {
-  //   if (checkToken()) {
-  //     navigate('/profile');
-  //     setIsSidebarOpen(false);
-  //   } else {
-  //     setIsLoginModalOpen(true);
-  //   }
-  // };
 
   const handleProfileClick = () => {
     navigate('/profile');
+    setIsSidebarOpen(false);
   }
 
   
