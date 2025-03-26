@@ -11,7 +11,8 @@ const RemoveProduct = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const { user } = useContext(AuthContext);
-  const API_URL = 'http://localhost:3001'; // অথবা 'https://e-comarce-iuno.vercel.app'
+//  const API_URL = 'http://localhost:3001'; 
+  const API_URL = 'https://e-comarce-iuno.vercel.app'
   const PRODUCTS_PER_PAGE = 10;
 
   const isAdmin = user?.role === 'admin';
