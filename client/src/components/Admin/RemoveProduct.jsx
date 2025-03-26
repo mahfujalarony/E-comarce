@@ -123,7 +123,7 @@ const RemoveProduct = () => {
   return (
     <div
       ref={scrollContainerRef}
-      className="container mx-auto px-4 py-8 bg-gray-100 overflow-y-auto"
+      className="container mx-auto px-4 py-8 bg-gray-100 overflow-y-auto max-w-full"
       style={{ maxHeight: '100vh' }}
     >
       <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Remove Products</h2>
@@ -154,27 +154,27 @@ const RemoveProduct = () => {
       {!isLoading && products.length === 0 && (
         <p className="text-center text-gray-600">No products available.</p>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <ul className="space-y-4">
         {products.map((product) => (
-          <div
+          <li
             key={product._id}
-            className="bg-white rounded-lg shadow-md p-4 flex flex-col justify-between"
+            className="bg-white rounded-lg shadow-md p-4 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between"
           >
-            <div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
               {product.images && product.images.length > 0 && (
-                <div className="w-full h-40 bg-gray-200 flex items-center justify-center">
+                <div className="w-full sm:w-24 h-24 flex-shrink-0 bg-gray-200 flex items-center justify-center rounded-lg overflow-hidden">
                   {imageDataMap[product.images[0]] ? (
                     <img
                       src={imageDataMap[product.images[0]]}
                       alt={product.name}
-                      className="w-full h-full object-cover rounded-t-lg"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-300 animate-pulse" />
                   )}
                 </div>
               )}
-              <div className="mt-2">
+              <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
                 <p className="text-sm text-gray-600 line-clamp-2">{product.description}</p>
                 <p className="text-lg font-bold text-green-600 mt-1">${product.price}</p>
@@ -185,14 +185,38 @@ const RemoveProduct = () => {
               <button
                 onClick={() => handleRemoveProduct(product._id)}
                 disabled={isLoading}
-                className="mt-4 w-full py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? 'Removing...' : 'Remove'}
               </button>
             )}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
+      {isLoading && products.length > 0 && (
+        <div className="flex justify-center mt-4">
+          <svg
+            className="animate-spin h-6 w-6 text-indigo-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+        </div>
+      )}
       <div ref={bottomSentinel} style={{ height: '10px' }}></div>
       <ToastContainer />
     </div>

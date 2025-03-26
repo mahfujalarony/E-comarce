@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import UserList from "./Admin/UserList";
 import OrderController from "./Admin/OrderControler";
 import CreateProduct from "./Admin/CreateProduct";
+import RemoveProduct from "./Admin/RemoveProduct";
 
 const AdminDashboard = () => {
     const [activeSection, setActiveSection] = useState("users");
@@ -70,6 +71,15 @@ const AdminDashboard = () => {
                     >
                         Create Product
                     </li>
+
+                    <li
+                        className={`p-2 rounded cursor-pointer hover:bg-gray-700 ${
+                            activeSection === "create-product" ? "bg-gray-700" : ""
+                        }`}
+                        onClick={() => handleSectionChange("remove-product")}
+                    >
+                        Remove Product
+                    </li>
                 </ul>
             </div>
 
@@ -78,6 +88,7 @@ const AdminDashboard = () => {
                 {activeSection === "users" && <UserList />}
                 {activeSection === "orders" && <OrderController />}
                 {activeSection === "create-product" && <CreateProduct />}
+                {activeSection === "remove-product" && <RemoveProduct />}
             </div>
         </div>
     );

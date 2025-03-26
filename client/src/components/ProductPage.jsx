@@ -15,8 +15,8 @@ const ProductPage = () => {
 
 
   const location = useLocation();
-   const API_URL =  'https://e-comarce-iuno.vercel.app';
-   //const API_URL = 'https://e-comarce-iuno.vercel.app'
+  
+   const API_URL = 'https://e-comarce-iuno.vercel.app'
    //const API_URL = 'http://localhost:3001'
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
