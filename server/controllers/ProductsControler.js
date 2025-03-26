@@ -12,6 +12,82 @@ global.crypto.getRandomValues = function (array) {
   return require('crypto').webcrypto.getRandomValues(array);
 };
 
+// const imageCache = new Map();
+
+// exports.createProduct = async (req, res) => {
+//   try {
+//     console.log('Starting createProduct...');
+//     const { name, description, price, stock, category, brand } = req.body;
+//     const files = req.files;
+//     console.log('Received body:', req.body);
+//     console.log('Received files:', files);
+
+//     if (!files || files.length === 0) {
+//       console.log('No images uploaded');
+//       return res.status(400).json({ error: 'No images uploaded' });
+//     }
+
+//     console.log('Connecting to Mega.nz...');
+//     const storage = new Storage({
+//       email: 'mahfujalamrony07@gmail.com',
+//       password: "MS4i=s+@U'5W%a}",
+//     });
+
+//     await storage.ready;
+//     console.log('Mega.nz connected');
+
+
+//     let productsFolder = storage.root.children.find(
+//       (child) => child.name === 'Products' && child.directory
+//     );
+//     console.log('productsfolder:', productsFolder);
+
+//     if (!productsFolder) {
+//       console.log('Creating Products folder...');
+//       productsFolder = await storage.mkdir({ name: 'Products' });
+//       console.log('created productsfolder:', productsFolder);
+//     }
+
+//     const imageLinks = [];
+//     for (const file of files) {
+//       console.log('Uploading file:', file.originalname);
+//       const uploadOptions = {
+//         name: `${Date.now()}-${file.originalname}`,
+//         allowUploadBuffering: true,
+//       };
+//       const uploadedFile = await productsFolder.upload(uploadOptions, file.buffer).complete;
+//       const fileLink = await uploadedFile.link();
+//       imageLinks.push(fileLink);
+//       console.log('File uploaded:', fileLink);
+//     }
+
+//     const product = new Product({
+//       name,
+//       description,
+//       price: parseFloat(price),
+//       stock: parseInt(stock),
+//       category,
+//       brand,
+//       images: imageLinks,
+//     });
+
+//     console.log('Saving product to MongoDB...');
+//     await product.save();
+//     console.log('Product saved');
+
+//     res.status(201).json({ message: 'Product created successfully!', product });
+//   } catch (error) {
+//     console.error('Error in createProduct:', error.message, error.stack);
+//     res.status(500).json({ error: 'Failed to create product.', details: error.message });
+//   }
+// };
+
+// MegaJS কনফিগারেশন
+const megaConfig = {
+  email: process.env.MEGA_EMAIL || 'mahfujalamrony07@gmail.com',
+  password: process.env.MEGA_PASSWORD || "MS4i=s+@U'5W%a}"
+};
+
 const imageCache = new Map();
 
 exports.createProduct = async (req, res) => {
@@ -19,33 +95,22 @@ exports.createProduct = async (req, res) => {
     console.log('Starting createProduct...');
     const { name, description, price, stock, category, brand } = req.body;
     const files = req.files;
-    console.log('Received body:', req.body);
-    console.log('Received files:', files);
 
     if (!files || files.length === 0) {
-      console.log('No images uploaded');
       return res.status(400).json({ error: 'No images uploaded' });
     }
 
     console.log('Connecting to Mega.nz...');
-    const storage = new Storage({
-      email: 'mahfujalamrony07@gmail.com',
-      password: "MS4i=s+@U'5W%a}",
-    });
-
-    await storage.ready;
+    const storage = await new Storage(megaConfig).ready;
     console.log('Mega.nz connected');
 
-
     let productsFolder = storage.root.children.find(
-      (child) => child.name === 'Products' && child.directory
+      child => child.name === 'Products' && child.directory
     );
-    console.log('productsfolder:', productsFolder);
 
     if (!productsFolder) {
       console.log('Creating Products folder...');
-      productsFolder = await storage.mkdir({ name: 'Products' });
-      console.log('created productsfolder:', productsFolder);
+      productsFolder = await storage.mkdir('Products');
     }
 
     const imageLinks = [];
@@ -53,8 +118,9 @@ exports.createProduct = async (req, res) => {
       console.log('Uploading file:', file.originalname);
       const uploadOptions = {
         name: `${Date.now()}-${file.originalname}`,
-        allowUploadBuffering: true,
+        attributes: { type: file.mimetype }
       };
+      
       const uploadedFile = await productsFolder.upload(uploadOptions, file.buffer).complete;
       const fileLink = await uploadedFile.link();
       imageLinks.push(fileLink);
@@ -71,16 +137,18 @@ exports.createProduct = async (req, res) => {
       images: imageLinks,
     });
 
-    console.log('Saving product to MongoDB...');
     await product.save();
-    console.log('Product saved');
-
     res.status(201).json({ message: 'Product created successfully!', product });
   } catch (error) {
-    console.error('Error in createProduct:', error.message, error.stack);
-    res.status(500).json({ error: 'Failed to create product.', details: error.message });
+    console.error('Full error:', error);
+    res.status(500).json({ 
+      error: 'Failed to create product.',
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
+
 
 exports.getProducts = async (req, res) => {
   try {
