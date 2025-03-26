@@ -13,7 +13,6 @@ const OrderController = () => {
     const fetchOrders = async () => {
       const token = localStorage.getItem("token");
       try {
-        console.log("Fetching orders from:", `${API_URL}/api/admin/orders`);
         const response = await axios.get(`${API_URL}/api/admin/orders`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -39,7 +38,6 @@ const OrderController = () => {
   
   const loadImage = async (url) => {
     if (imageDataMap[url]) {
-      console.log("Image already in imageDataMap:", url);
       return;
     }
     try {
@@ -79,7 +77,7 @@ const OrderController = () => {
     if (filter === "all") return true;
     return order.status.toLowerCase() === filter;
   });
-  console.log("Filtered orders count:", filteredOrders.length);
+
 
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen bg-gray-100">

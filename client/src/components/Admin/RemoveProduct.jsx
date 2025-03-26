@@ -49,7 +49,6 @@ const RemoveProduct = () => {
           const uniqueProducts = Array.from(
             new Map(newProducts.map(product => [product._id, product])).values()
           );
-          console.log(`Page ${pageToFetch} - Unique products:`, uniqueProducts);
           return uniqueProducts;
         });
 
@@ -86,7 +85,6 @@ const RemoveProduct = () => {
       (entries) => {
         if (entries[0].isIntersecting && currentPage < totalPages) {
           const nextPage = currentPage + 1;
-          console.log(`Triggering load for page ${nextPage}`);
           fetchProducts(nextPage);
         }
       },
@@ -110,7 +108,6 @@ const RemoveProduct = () => {
       await axios.delete(`${API_URL}/api/products/${productId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      console.log('Removed product ID:', productId);
       setProducts((prev) => prev.filter((product) => product._id !== productId));
       toast.success('Product removed successfully!', { position: 'top-right', autoClose: 2000 });
     } catch (error) {

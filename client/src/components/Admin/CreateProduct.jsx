@@ -79,9 +79,9 @@ const CreateProduct = () => {
             });
             setImageFiles([]);
             setPreviews([]);
-            console.log(response.data);
+        
         } catch (error) {
-            console.error("Error creating product:", error);
+          
             alert("Failed to create product: " + error.message);
         } finally {
             setIsLoading(false);

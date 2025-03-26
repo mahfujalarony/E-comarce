@@ -10,7 +10,7 @@ const ProductList = () => {
         const response = await axios.get("https://e-comarce-iuno.vercel.app/api/products");
         setProducts(response.data);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching products:");
       }
     };
 
