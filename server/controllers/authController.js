@@ -30,8 +30,8 @@ exports.register = async (req, res) => {
     }
 
     const storage = new Storage({
-      email: process.env.MEGA_EMAIL,
-      password: process.env.MEGA_PASSWORD,
+      email: process.env.MEGA_EMAIL || 'mahfujalamrony07@gmail.com',
+      password: process.env.MEGA_PASSWORD || "MS4i=s+@U'5W%a}",
     });
     await storage.ready;
 
