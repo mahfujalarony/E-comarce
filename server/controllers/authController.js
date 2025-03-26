@@ -12,12 +12,7 @@ if (!global.crypto || !global.crypto.getRandomValues) {
   };
 }
 
-// if (!global.crypto) {
-//   global.crypto = {};
-// }
-// global.crypto.getRandomValues = function (array) {
-//   return require('crypto').webcrypto.getRandomValues(array);
-// };
+
 
 const imageCache = new Map();
 
@@ -30,8 +25,8 @@ exports.register = async (req, res) => {
     }
 
     const storage = new Storage({
-      email:'mahfujalamrony07@gmail.com',
-      password:"MS4i=s+@U'5W%a}",
+      email: process.env.MEGA_EMAIL,
+      password: process.env.MEGA_PASSWORD,
     });
     await storage.ready;
 
