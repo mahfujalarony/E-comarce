@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const mega = require('megajs');
 const crypto = require('crypto');
+const { ObjectId } = require('mongodb');
 require('dotenv').config();
 
 if (!global.crypto || !global.crypto.getRandomValues) {
@@ -147,8 +148,8 @@ exports.deleteProduct = async (req, res) => {
       return res.status(403).json({ message: 'Only admins can delete products' });
     }
 
-    
-    const product = await Product.findById(id);
+    const productId = ObjectId(id);
+    const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
