@@ -53,7 +53,7 @@ exports.register = async (req, res) => {
     await user.save();
 
     const token = jwt.sign(
-      { user: user.name, email: user.email, userId: user._id, role: user.role },
+      { user: user.name, email: user.email, _id: user._id, role: user.role },
       process.env.JWT_SECRET
     );
 
@@ -77,7 +77,7 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { user: user.name, email: user.email, userId: user._id, role: user.role },
+      { user: user.name, email: user.email, _id: user._id, role: user.role },
       process.env.JWT_SECRET
     );
     res.status(200).json({ message: 'Login Successful', token, user });

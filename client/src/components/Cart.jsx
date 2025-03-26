@@ -8,17 +8,16 @@ import 'react-toastify/dist/ReactToastify.css';
 const Cart = () => {
   const [cart, setCart] = useState({ items: [], total: 0 });
   const [imageDataMap, setImageDataMap] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); 
   const { user } = useContext(AuthContext);
   const userId = user?._id || JSON.parse(localStorage.getItem('user'))?._id || '';
   const navigate = useNavigate();
   const API_URL = 'https://e-comarce-iuno.vercel.app';
   const observerRefs = useRef({});
 
- 
   const fetchCart = async () => {
     if (!userId) return;
-    setLoading(true);
+    setIsLoading(true);
     try {
       const response = await axios.get(`${API_URL}/api/cart/${userId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -27,20 +26,18 @@ const Cart = () => {
       console.log('data', response.data);
     } catch (error) {
       console.error('Error fetching cart:', error);
-      setCart({ items: [], total: 0 }); 
+      setCart({ items: [], total: 0 });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  
   useEffect(() => {
     fetchCart();
   }, [userId]);
 
-  
   const loadImage = async (url) => {
-    if (imageDataMap[url]) return;
+    if (!url || imageDataMap[url]) return;
     try {
       const res = await axios.get(`${API_URL}/api/image-data`, { params: { url } });
       setImageDataMap(prev => ({ ...prev, [url]: res.data.imageData }));
@@ -64,19 +61,16 @@ const Cart = () => {
     );
 
     Object.values(observerRefs.current).forEach(ref => ref && observer.observe(ref));
-
     return () => observer.disconnect();
   }, [cart.items]);
 
   const removeFromCart = async (productId) => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       await axios.post(`${API_URL}/api/cart/remove`, { userId, productId }, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       toast.success('Removed from cart!', { autoClose: 1500 });
-      
-      
       setCart(prevCart => {
         const newItems = prevCart.items.filter(item => item.productId._id !== productId);
         const newTotal = newItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -85,9 +79,9 @@ const Cart = () => {
     } catch (error) {
       console.error('Error removing from cart:', error);
       toast.error('Failed to remove product');
-      fetchCart(); 
+      fetchCart();
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -99,16 +93,38 @@ const Cart = () => {
     navigate('/products');
   };
 
-
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl min-h-screen">
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .animate-fadeIn {
+            animation: fadeIn 0.5s ease-in-out forwards;
+          }
+          @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+          }
+          .shimmer {
+            background: linear-gradient(to right, #f0f0f0 0%, #e0e0e0 20%, #f0f0f0 40%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+          }
+        `}
+      </style>
+
       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-gray-800">Shopping Cart</h2>
-      {loading ? (
-        <div className="flex justify-center items-center h-[60vh]">
-          <p className="text-gray-600">Loading...</p>
+
+      {isLoading && cart.items.length === 0 ? (
+        <div className="text-center py-10">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading cart...</p>
         </div>
       ) : (
-        <>
+        <div className="opacity-0 animate-fadeIn">
           {cart.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-[60vh] bg-white p-6 rounded-lg shadow-md">
               <img
@@ -137,7 +153,7 @@ const Cart = () => {
                   <div className="flex items-center w-full sm:w-auto mb-4 sm:mb-0">
                     {item.productId.images?.length > 0 && (
                       <div
-                        ref={el => observerRefs.current[item.productId._id] = el}
+                        ref={(el) => (observerRefs.current[item.productId._id] = el)}
                         data-url={item.productId.images[0]}
                         className="w-20 h-20 bg-gray-200 flex items-center justify-center rounded mr-4"
                       >
@@ -149,7 +165,7 @@ const Cart = () => {
                             onError={(e) => (e.target.src = "https://via.placeholder.com/80")}
                           />
                         ) : (
-                          <p className="text-gray-500">Loading...</p>
+                          <div className="w-full h-full shimmer" />
                         )}
                       </div>
                     )}
@@ -162,12 +178,14 @@ const Cart = () => {
                     <button
                       onClick={() => removeFromCart(item.productId._id)}
                       className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm transition duration-200"
+                      disabled={isLoading}
                     >
                       Remove
                     </button>
                     <button
                       onClick={() => handleBuyNow(item.productId._id)}
                       className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm transition duration-200"
+                      disabled={isLoading}
                     >
                       Buy Now
                     </button>
@@ -178,13 +196,16 @@ const Cart = () => {
                 <p className="text-xl md:text-2xl font-bold text-gray-800">
                   Total: ${cart.total.toFixed(2)}
                 </p>
-                <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition duration-200">
+                <button
+                  className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition duration-200"
+                  disabled={isLoading}
+                >
                   Checkout
                 </button>
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
       <ToastContainer />
     </div>

@@ -10,14 +10,15 @@ const ProductPage = () => {
   const [imageDataMap, setImageDataMap] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false); 
   const { user } = useContext(AuthContext);
   const userId = user?._id || JSON.parse(localStorage.getItem("user"))?._id || "";
-
+  console.log('userid', userId);
 
   const location = useLocation();
   
-   const API_URL = 'https://e-comarce-iuno.vercel.app'
-   //const API_URL = 'http://localhost:3001'
+  const API_URL = 'https://e-comarce-iuno.vercel.app'
+  //const API_URL = 'http://localhost:3001'
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
   const bottomSentinel = useRef(null);
@@ -33,6 +34,7 @@ const ProductPage = () => {
   }, [searchQuery]);
 
   const fetchProducts = async (pageToFetch, reset = false) => {
+    setIsLoading(true); 
     try {
       const response = await axios.get(`${API_URL}/api/products`, {
         params: { page: pageToFetch, limit: PRODUCTS_PER_PAGE, search: searchQuery },
@@ -69,6 +71,8 @@ const ProductPage = () => {
     } catch (error) {
       console.error('Error fetching products:', error);
       if (reset) setProducts([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -162,9 +166,15 @@ const ProductPage = () => {
           }
         `}
       </style>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {
-          products.map((product) => (
+      
+      {isLoading && products.length === 0 ? (
+        <div className="text-center py-10">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading products...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          {products.map((product) => (
             <div
               key={product._id}
               className="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden opacity-0 animate-fadeIn"
@@ -200,7 +210,6 @@ const ProductPage = () => {
               </Link>
               <button
                 onClick={() => handleAddToCart(product._id)}
-                
                 disabled={product.stock <= 0}
                 className={`mt-4 w-full py-2 rounded-md text-white transition-colors duration-300 ${
                   product.stock <= 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
@@ -209,9 +218,9 @@ const ProductPage = () => {
                 {product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
               </button>
             </div>
-          ))
-         }
-      </div>
+          ))}
+        </div>
+      )}
       <div ref={bottomSentinel} style={{ height: '10px' }}></div>
       <ToastContainer />
     </div>
