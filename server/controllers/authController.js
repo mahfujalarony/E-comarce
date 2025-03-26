@@ -3,14 +3,21 @@ const { Storage, File } = require('megajs');
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 require('dotenv').config();
 
-if (!global.crypto) {
-  global.crypto = {};
+if (!global.crypto || !global.crypto.getRandomValues) {
+  global.crypto = {
+    getRandomValues: (array) => crypto.randomFillSync(array),
+  };
 }
-global.crypto.getRandomValues = function (array) {
-  return require('crypto').webcrypto.getRandomValues(array);
-};
+
+// if (!global.crypto) {
+//   global.crypto = {};
+// }
+// global.crypto.getRandomValues = function (array) {
+//   return require('crypto').webcrypto.getRandomValues(array);
+// };
 
 const imageCache = new Map();
 
