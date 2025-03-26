@@ -5,14 +5,14 @@ const path = require('path');
 const mega = require('megajs');
 require('dotenv').config();
 
-if (!global.crypto) {
-  global.crypto = {};
-}
-global.crypto.getRandomValues = function (array) {
-  return require('crypto').webcrypto.getRandomValues(array);
-};
+// if (!global.crypto) {
+//   global.crypto = {};
+// }
+// global.crypto.getRandomValues = function (array) {
+//   return require('crypto').webcrypto.getRandomValues(array);
+// };
 
-// const imageCache = new Map();
+const imageCache = new Map();
 
 // exports.createProduct = async (req, res) => {
 //   try {
@@ -83,71 +83,6 @@ global.crypto.getRandomValues = function (array) {
 // };
 
 // MegaJS কনফিগারেশন
-const megaConfig = {
-  email: process.env.MEGA_EMAIL || 'mahfujalamrony07@gmail.com',
-  password: process.env.MEGA_PASSWORD || "MS4i=s+@U'5W%a}"
-};
-
-const imageCache = new Map();
-
-exports.createProduct = async (req, res) => {
-  try {
-    console.log('Starting createProduct...');
-    const { name, description, price, stock, category, brand } = req.body;
-    const files = req.files;
-
-    if (!files || files.length === 0) {
-      return res.status(400).json({ error: 'No images uploaded' });
-    }
-
-    console.log('Connecting to Mega.nz...');
-    const storage = await new Storage(megaConfig).ready;
-    console.log('Mega.nz connected');
-
-    let productsFolder = storage.root.children.find(
-      child => child.name === 'Products' && child.directory
-    );
-
-    if (!productsFolder) {
-      console.log('Creating Products folder...');
-      productsFolder = await storage.mkdir('Products');
-    }
-
-    const imageLinks = [];
-    for (const file of files) {
-      console.log('Uploading file:', file.originalname);
-      const uploadOptions = {
-        name: `${Date.now()}-${file.originalname}`,
-        attributes: { type: file.mimetype }
-      };
-      
-      const uploadedFile = await productsFolder.upload(uploadOptions, file.buffer).complete;
-      const fileLink = await uploadedFile.link();
-      imageLinks.push(fileLink);
-      console.log('File uploaded:', fileLink);
-    }
-
-    const product = new Product({
-      name,
-      description,
-      price: parseFloat(price),
-      stock: parseInt(stock),
-      category,
-      brand,
-      images: imageLinks,
-    });
-
-    await product.save();
-    res.status(201).json({ message: 'Product created successfully!', product });
-  } catch (error) {
-    console.error('Full error:', error);
-    res.status(500).json({ 
-      error: 'Failed to create product.',
-      message: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
-  }
-};
 
 
 exports.getProducts = async (req, res) => {
