@@ -2,6 +2,7 @@ const { Storage, File } = require('megajs');
 const Product = require('../models/ProductModel');
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 const mega = require('megajs');
 const crypto = require('crypto');
 const { ObjectId } = require('mongodb');
@@ -149,12 +150,12 @@ exports.deleteProduct = async (req, res) => {
     }
 
     const productId = ObjectId(id);
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    // const product = await Product.findById(productId);
+    // if (!product) {
+    //   return res.status(404).json({ message: 'Product not found' });
+    // }
 
-    await Product.findByIdAndDelete(id);
+    await Product.findByIdAndDelete(productId);
     res.status(200).json({ message: 'Product deleted successfully' });
   } catch (error) {
     console.error('Error in deleteProduct:', error.message);
