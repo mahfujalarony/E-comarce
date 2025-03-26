@@ -128,6 +128,39 @@ exports.getProductById = async (req, res) => {
   }
 };
 
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+ 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userRole = decoded.role;
+
+  
+    if (userRole !== 'admin') {
+      return res.status(403).json({ message: 'Only admins can delete products' });
+    }
+
+    
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    await Product.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Product deleted successfully' });
+  } catch (error) {
+    console.error('Error in deleteProduct:', error.message);
+    res.status(500).json({ error: 'Failed to delete product' });
+  }
+};
+
 // exports.getImageData = async (req, res) => {
 //   try {
 //     const { url } = req.query;

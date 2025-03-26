@@ -19,6 +19,7 @@ import MyOrders from './components/MyOrders';
 import OrderControler from './components/Admin/OrderControler';
 import UserList from './components/Admin/UserList';
 import Footer from './components/Footer';
+import RemoveProduct from './components/Admin/RemoveProduct';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -44,6 +45,7 @@ function App() {
               <Route path="/admin/orders" element={<OrderControler />} />
               <Route path="/admin/users" element={<UserList />} />
               <Route path="/admin/create" element={<CreateProduct />} />
+              <Route path='/delete' element={<RemoveProduct />} />
             </Routes>
             <Footer />
           </div>
