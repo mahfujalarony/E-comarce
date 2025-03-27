@@ -23,7 +23,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* হ্যামবার্গার মেনু (মোবাইলের জন্য) */}
+  
       <button
         className="fixed top-24 left-0 p-2 bg-gray-800 text-white rounded-md lg:hidden z-50 hover:bg-gray-700 transition duration-200"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -31,7 +31,6 @@ const AdminDashboard = () => {
         <FaBars className="w-6 h-6" />
       </button>
 
-      {/* সাইডবার */}
       <div
         className={`mt-12 md:mt-0 fixed lg:relative inset-y-0 left-0 w-64 bg-gray-900 text-white transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -60,7 +59,7 @@ const AdminDashboard = () => {
         </ul>
       </div>
 
-      {/* প্রধান কন্টেন্ট */}
+     
       <div className="flex-1 p-6 pt-[calc(60px+1rem)] lg:pt-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-6">
