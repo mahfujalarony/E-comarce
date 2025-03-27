@@ -60,7 +60,7 @@ exports.register = async (req, res) => {
     res.status(201).json({
       message: 'User registered successfully',
       token,
-      user: { name: user.name, email: user.email, userId: user._id, photoPath: user.photoPath },
+      user: { name: user.name, email: user.email, _id: user._id, photoPath: user.photoPath },
     });
   } catch (error) {
     console.error('Error in register:', error.message);
