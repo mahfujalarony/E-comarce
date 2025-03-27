@@ -6,6 +6,8 @@ const UserList = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true); 
 
+  const Main_Admin_Email = 'admin@example.com';
+
   useEffect(() => {
     const fetchUsers = async () => {
       setIsLoading(true);
@@ -52,7 +54,11 @@ const UserList = () => {
   };
 
   const removeAdmin = async (email) => {
-    setIsLoading(true); 
+    if (email === MAIN_ADMIN_EMAIL) {
+      alert("Can't Remove Main Admin!");
+      return;
+    }
+    setIsLoading(true);
     try {
       await axios.put(
         "https://e-comarce-iuno.vercel.app/api/users/remove-admin",
@@ -66,16 +72,20 @@ const UserList = () => {
           user.email === email ? { ...user, role: "user" } : user
         )
       );
-      alert("Admin role removed!");
+      alert("Remove Admin Successfully!");
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to remove Admin!");
+      alert(err.response?.data?.message || "Faild to Remove Admin!");
     } finally {
       setIsLoading(false);
     }
   };
 
   const removeUser = async (email) => {
-    setIsLoading(true); 
+    if (email === MAIN_ADMIN_EMAIL) {
+      alert("Can't Remove Main Admin!");
+      return;
+    }
+    setIsLoading(true);
     try {
       await axios.delete("https://e-comarce-iuno.vercel.app/api/users/delete-user", {
         data: { email },
@@ -83,13 +93,53 @@ const UserList = () => {
       });
       setUsers((prevUsers) => prevUsers.filter((user) => user.email !== email));
       if (selectedUser?.email === email) setSelectedUser(null);
-      alert("User removed successfully!");
+      alert("Remove User Successfully!");
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to remove user!");
+      alert(err.response?.data?.message || "Faild To Remove Admin!");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // const removeAdmin = async (email) => {
+  //   setIsLoading(true); 
+  //   try {
+  //     await axios.put(
+  //       "https://e-comarce-iuno.vercel.app/api/users/remove-admin",
+  //       { email },
+  //       {
+  //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  //       }
+  //     );
+  //     setUsers((prevUsers) =>
+  //       prevUsers.map((user) =>
+  //         user.email === email ? { ...user, role: "user" } : user
+  //       )
+  //     );
+  //     alert("Admin role removed!");
+  //   } catch (err) {
+  //     alert(err.response?.data?.message || "Failed to remove Admin!");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // const removeUser = async (email) => {
+  //   setIsLoading(true); 
+  //   try {
+  //     await axios.delete("https://e-comarce-iuno.vercel.app/api/users/delete-user", {
+  //       data: { email },
+  //       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  //     });
+  //     setUsers((prevUsers) => prevUsers.filter((user) => user.email !== email));
+  //     if (selectedUser?.email === email) setSelectedUser(null);
+  //     alert("User removed successfully!");
+  //   } catch (err) {
+  //     alert(err.response?.data?.message || "Failed to remove user!");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
