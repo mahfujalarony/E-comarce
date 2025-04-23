@@ -20,6 +20,7 @@ import OrderControler from './components/Admin/OrderControler';
 import UserList from './components/Admin/UserList';
 import Footer from './components/Footer';
 import RemoveProduct from './components/Admin/RemoveProduct';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -29,6 +30,7 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <div>
+          <ScrollToTop />
             <Navbar />
             <Routes>
               <Route path="/" element={<HomePage />} />
