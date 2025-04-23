@@ -14,7 +14,7 @@ const MyOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/myOrders', {
+        const response = await axios.get('https://e-comarce-8gj0.onrender.com/api/myOrders', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOrders(response.data);
@@ -33,7 +33,7 @@ const MyOrders = () => {
     setIsLoading(true); 
     try {
       await axios.put(
-        `http://localhost:5000/api/myOrders/${orderId}`,
+        `https://e-comarce-8gj0.onrender.com/api/myOrders/${orderId}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },

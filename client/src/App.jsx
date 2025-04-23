@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import './App.css';
@@ -18,7 +17,6 @@ import Profile from './components/Profile';
 import MyOrders from './components/MyOrders';
 import OrderControler from './components/Admin/OrderControler';
 import UserList from './components/Admin/UserList';
-import Footer from './components/Footer';
 import RemoveProduct from './components/Admin/RemoveProduct';
 import ScrollToTop from './components/ScrollToTop';
 

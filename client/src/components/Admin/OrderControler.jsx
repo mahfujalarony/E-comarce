@@ -7,7 +7,7 @@ const OrderController = () => {
   const [filter, setFilter] = useState("all");
   const [imageDataMap, setImageDataMap] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const API_URL = "https://e-comarce-iuno.vercel.app";
+  const API_URL = "https://e-comarce-8gj0.onrender.com";
 
   useEffect(() => {
     const fetchOrders = async () => {

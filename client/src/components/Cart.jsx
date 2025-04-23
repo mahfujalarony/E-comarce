@@ -12,7 +12,7 @@ const Cart = () => {
   const { user } = useContext(AuthContext);
   const userId = user?._id || JSON.parse(localStorage.getItem('user'))?._id || '';
   const navigate = useNavigate();
-  const API_URL = 'http://localhost:5000';
+  const API_URL = 'https://e-comarce-8gj0.onrender.com';
   const observerRefs = useRef({});
 
   const fetchCart = async () => {

@@ -68,7 +68,7 @@ Check out the live version of this project on **Vercel**:
 
 ## 📄 Usage
 
-1. **Access the website:** Open your browser and visit `https://e-comarce-wheat.vercel.app/`
+1. **Access the website:** Open your browser and visit `https://e-comarce.netlify.app/`
 2. **Admin Login:** Use the default credentials if no admin exists.
 3. **User Actions:** Register, browse products, add to cart, and place orders.
 4. **Admin Actions:** Manage users, products, and orders from the dashboard.

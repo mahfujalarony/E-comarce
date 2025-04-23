@@ -18,7 +18,7 @@ const OrderPage = () => {
   const [pageState, setPageState] = useState({ isLoading: true, product: null, imageData: null });
   const imageRef = useRef(null);
   //const API_URL = 'https://e-comarce-iuno.vercel.app';
-  const API_URL = 'http://localhost:5000';
+  const API_URL = 'https://e-comarce-8gj0.onrender.com';
 
 const isFetched = useRef(false);
 

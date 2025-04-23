@@ -30,7 +30,7 @@ const Login = () => {
     };
 
     try {
-      const response = await axios.post('https://e-comarce-iuno.vercel.app/api/auth/login', data, {
+      const response = await axios.post('https://e-comarce-8gj0.onrender.com/api/auth/login', data, {
         headers: {
           'Content-Type': 'application/json',
         },
