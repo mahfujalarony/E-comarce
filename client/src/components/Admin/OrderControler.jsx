@@ -110,8 +110,63 @@ const OrderController = () => {
         </div>
       ) : (
         <div className="opacity-0 animate-fadeIn">
-          {/* ফিল্টার বাটন */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg lg:relative lg:bottom-auto lg:shadow-none">
+        
+          {/* <div className="sticky  left-0 right-0 bg-white shadow-lg lg:relative lg:bottom-auto lg:shadow-none">
+            <div className="flex justify-around lg:justify-start lg:gap-4 p-2">
+              <button
+                onClick={() => setFilter("all")}
+                className={`px-4 py-2 rounded-lg font-medium ${
+                  filter === "all"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                }`}
+                disabled={isLoading}
+              >
+                All Orders ({orders.length})
+              </button>
+              <button
+                onClick={() => setFilter("active")}
+                className={`px-4 py-2 rounded-lg font-medium ${
+                  filter === "active"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                }`}
+                disabled={isLoading}
+              >
+                Active Orders ({orders.filter((o) => o.status === "Active").length})
+              </button>
+              <button
+                onClick={() => setFilter("completed")}
+                className={`px-4 py-2 rounded-lg font-medium ${
+                  filter === "completed"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                }`}
+                disabled={isLoading}
+              >
+                Completed Orders ({orders.filter((o) => o.status === "Completed").length})
+              </button>
+              <button
+                onClick={() => setFilter("cancelled")}
+                className={`px-4 py-2 rounded-lg font-medium ${
+                  filter === "cancelled"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                }`}
+                disabled={isLoading}
+              >
+                Cancelled Orders ({orders.filter((o) => o.status === "Cancelled").length})
+              </button>
+            </div>
+          </div> */}
+
+          <div className="flex flex-col lg:flex-row gap-6 mt-16 lg:mt-0">
+            
+            <div className="w-full lg:w-2/3">
+            
+              <div className="space-y-4 max-h-[100vh] overflow-y-auto pr-2">
+
+                <div className="fixed  top-[-100px] md:top-[-60px] lg:top-0 left-0 right-0 bg-white shadow-lg lg:relative  lg:shadow-none">
             <div className="flex justify-around lg:justify-start lg:gap-4 p-2">
               <button
                 onClick={() => setFilter("all")}
@@ -159,10 +214,6 @@ const OrderController = () => {
               </button>
             </div>
           </div>
-
-          <div className="flex flex-col lg:flex-row gap-6 mt-16 lg:mt-0">
-            <div className="w-full lg:w-2/3">
-              <div className="space-y-4 max-h-[80vh] overflow-y-auto pr-2">
                 {filteredOrders.length > 0 ? (
                   filteredOrders.map((order) => (
                     <div key={order._id} className="bg-white rounded-lg shadow-md">

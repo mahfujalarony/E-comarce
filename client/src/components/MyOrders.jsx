@@ -14,7 +14,7 @@ const MyOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('https://e-comarce-iuno.vercel.app/api/myOrders', {
+        const response = await axios.get('http://localhost:5000/api/myOrders', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOrders(response.data);
@@ -33,7 +33,7 @@ const MyOrders = () => {
     setIsLoading(true); 
     try {
       await axios.put(
-        `https://e-comarce-iuno.vercel.app/api/myOrders/${orderId}`,
+        `http://localhost:5000/api/myOrders/${orderId}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },

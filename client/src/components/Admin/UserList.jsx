@@ -6,13 +6,13 @@ const UserList = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true); 
 
-  const Main_Admin_Email = 'admin@example.com';
+  //const Main_Admin_Email = 'admin@example.com';
 
   useEffect(() => {
     const fetchUsers = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("https://e-comarce-iuno.vercel.app/api/users", {
+        const response = await axios.get("http://localhost:5000/api/users", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setUsers(response.data);
@@ -34,7 +34,7 @@ const UserList = () => {
     setIsLoading(true); 
     try {
       await axios.put(
-        "https://e-comarce-iuno.vercel.app/api/users/make-admin",
+        "http://localhost:5000/api/users/make-admin",
         { email },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -54,14 +54,14 @@ const UserList = () => {
   };
 
   const removeAdmin = async (email) => {
-    if (email === MAIN_ADMIN_EMAIL) {
+    if (email === "admin@example.com") {
       alert("Can't Remove Main Admin!");
       return;
     }
     setIsLoading(true);
     try {
       await axios.put(
-        "https://e-comarce-iuno.vercel.app/api/users/remove-admin",
+        "http://localhost:5000/api/users/remove-admin",
         { email },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -75,19 +75,20 @@ const UserList = () => {
       alert("Remove Admin Successfully!");
     } catch (err) {
       alert(err.response?.data?.message || "Faild to Remove Admin!");
+      console.log(err);
     } finally {
       setIsLoading(false);
     }
   };
 
   const removeUser = async (email) => {
-    if (email === MAIN_ADMIN_EMAIL) {
+    if (email === "admin@example.com") {
       alert("Can't Remove Main Admin!");
       return;
     }
     setIsLoading(true);
     try {
-      await axios.delete("https://e-comarce-iuno.vercel.app/api/users/delete-user", {
+      await axios.delete("http://localhost:5000/api/users/delete-user", {
         data: { email },
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -142,7 +143,7 @@ const UserList = () => {
   // };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-100 xl:py-8 xl:px-4 sm:px-6 lg:px-8">
       <style>
         {`
           @keyframes fadeIn {
@@ -165,11 +166,14 @@ const UserList = () => {
           <div className="opacity-0 animate-fadeIn">
             <div className="flex flex-col lg:flex-row gap-6">
          
-              <div className="w-full lg:w-2/3 bg-white rounded-lg shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-700 mb-6">
+              <div className="w-full lg:w-2/3 bg-white rounded-lg shadow-lg p-2 md:p-4 lg:p-6">
+                {/* <h2 className="text-xl font-semibold text-gray-700 mb-6">
+                  User List ({users.length})
+                </h2> */}
+                <ul className="space-y-4 max-h-[70vh] overflow-y-auto">
+                <h2 className="text-xl font-semibold text-gray-700 ">
                   User List ({users.length})
                 </h2>
-                <ul className="space-y-4 max-h-[70vh] overflow-y-auto">
                   {users.map((user) => (
                     <li key={user.email}>
                       <div

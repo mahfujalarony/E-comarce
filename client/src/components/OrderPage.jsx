@@ -17,7 +17,8 @@ const OrderPage = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [pageState, setPageState] = useState({ isLoading: true, product: null, imageData: null });
   const imageRef = useRef(null);
-  const API_URL = 'https://e-comarce-iuno.vercel.app';
+  //const API_URL = 'https://e-comarce-iuno.vercel.app';
+  const API_URL = 'http://localhost:5000';
 
 const isFetched = useRef(false);
 
@@ -107,6 +108,9 @@ useEffect(() => {
 
     try {
       setLoading(true);
+      // const response = await axios.post(`${API_URL}/api/placeOrder`, orderData, {
+      //   headers: { 'Authorization': `Bearer ${token}` },
+      // });
       const response = await axios.post(`${API_URL}/api/placeOrder`, orderData, {
         headers: { 'Authorization': `Bearer ${token}` },
       });

@@ -12,7 +12,7 @@ const Cart = () => {
   const { user } = useContext(AuthContext);
   const userId = user?._id || JSON.parse(localStorage.getItem('user'))?._id || '';
   const navigate = useNavigate();
-  const API_URL = 'https://e-comarce-iuno.vercel.app';
+  const API_URL = 'http://localhost:5000';
   const observerRefs = useRef({});
 
   const fetchCart = async () => {

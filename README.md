@@ -64,7 +64,7 @@ An advanced e-commerce platform built with **React.js**, **Node.js**, **MongoDB 
 ## 🌐 Live Demo
 
 Check out the live version of this project on **Vercel**:
-👉 [Live Demo](https://e-comarce-wheat.vercel.app/)
+👉 [Live Demo](https://e-comarce.netlify.app/)
 
 ## 📄 Usage
 

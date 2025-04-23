@@ -41,6 +41,7 @@ const Register = () => {
 
     try {
       const response = await axios.post('https://e-comarce-iuno.vercel.app/api/auth/register', data);
+     //const response = await axios.post('http://localhost:5000/api/auth/register', data);
       console.log(response.data);
       login(response.data.user, response.data.token);
       alert(response.data.message);

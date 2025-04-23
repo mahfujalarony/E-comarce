@@ -60,12 +60,12 @@ const AdminDashboard = () => {
       </div>
 
      
-      <div className="flex-1 p-6 pt-[calc(60px+1rem)] lg:pt-6 bg-gray-50">
+      <div className="flex-1 xl:p-6 pt-[calc(60px+1rem)] lg:pt-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-6">
+          {/* <h1 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-6">
             {sections.find((s) => s.id === activeSection)?.label}
-          </h1>
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          </h1> */}
+          <div className="bg-white xl:p-6 rounded-lg shadow-md">
             {activeSection === "users" && <UserList />}
             {activeSection === "orders" && <OrderController />}
             {activeSection === "create-product" && <CreateProduct />}

@@ -23,15 +23,15 @@ import RemoveProduct from './components/Admin/RemoveProduct';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
-  const [count, setCount] = useState(0);
+ 
 
   return (
     <div>
       <AuthProvider>
         <BrowserRouter>
-          <div>
+         
           <ScrollToTop />
-            <Navbar />
+          <Navbar />
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/register" element={<Register />} />
@@ -49,8 +49,8 @@ function App() {
               <Route path="/admin/create" element={<CreateProduct />} />
               <Route path='/delete' element={<RemoveProduct />} />
             </Routes>
-            <Footer />
-          </div>
+           
+          
         </BrowserRouter>
       </AuthProvider>
     </div>

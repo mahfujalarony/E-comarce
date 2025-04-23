@@ -143,8 +143,8 @@ const ProductPage = () => {
   return (
     <div
       ref={scrollContainerRef}
-      className="container mx-auto px-4 py-8 bg-gray-100 overflow-y-auto"
-      style={{ maxHeight: '100vh' }}
+      className="mt-24 md:mt-auto container mx-auto px-4 py-8 bg-gray-100 overflow-y-auto"
+      style={{ minHeight: '100vh' }}
     >
       <style>
         {`

@@ -3,16 +3,18 @@ const Product = require('../models/ProductModel');
 
 const placeOrder = async (req, res) => {
   const { productId, quantity, name, city, district, sub_district, product_name, product_price, productImageUrl, postalCode, landmark, phoneNumber } = req.body;
-  const userId = req.user.userId;
+ // const userId = req.user.userId;
+  const userId = req.user._id;
   console.log('userId', userId); 
  
 
   try {
   
     const product = await Product.findById(productId);
+    console.log(product);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
-    }
+    };
 
     
     const order = new Order({
@@ -50,7 +52,7 @@ const placeOrder = async (req, res) => {
 
 const getOrders = async (req, res) => {
   try {
-      const orders = await Order.find({ userId: req.user.userId });
+      const orders = await Order.find({ userId: req.user._id });
       if (orders.length === 0) {
          return res.status(404).json({ message: "No orders found" });
       }
