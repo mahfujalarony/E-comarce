@@ -171,7 +171,9 @@ const ProductDetails = () => {
   };
 
   return (
+
     <div className="container mx-auto px-4 bg-gray-100 min-h-screen pt-[calc(60px+1rem)] md:pt-6">
+         <ToastContainer /> 
       <style>
         {`
           @keyframes fadeIn {
@@ -366,32 +368,57 @@ const ProductDetails = () => {
             )}
           </div>
 
-          {isLoginModalOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
-              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-sm">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Login Required</h3>
-                <p className="text-gray-600 text-sm sm:text-base mb-4">
-                  You need to log in to place an order. Would you like to log in now?
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={handleLoginRedirect}
-                    className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300"
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={handleLoginCancel}
-                    className="w-full bg-gray-300 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition duration-300"
-                  >
-                    Cancel
-                  </button>
+          
+            {isLoginModalOpen && (
+              <div className="fixed inset-0 pb-[600px] bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+                <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-sm">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Login Required</h3>
+                  <p className="text-gray-600 text-sm sm:text-base mb-4">
+                    You need to log in to place an order. Would you like to log in now?
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={handleLoginRedirect}
+                      className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={handleLoginCancel}
+                      className="w-full bg-gray-300 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition duration-300"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            
+            
+            // <div className="fixed   top-0 bg-opacity-50 flex items-center justify-center z-50 px-4">
+            //   <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-sm">
+            //     <h3 className="text-lg font-semibold text-gray-800 mb-3">Login Required</h3>
+            //     <p className="text-gray-600 text-sm sm:text-base mb-4">
+            //       You need to log in to place an order. Would you like to log in now?
+            //     </p>
+            //     <div className="flex flex-col sm:flex-row gap-3">
+            //       <button
+            //         onClick={handleLoginRedirect}
+            //         className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300"
+            //       >
+            //         Login
+            //       </button>
+            //       <button
+            //         onClick={handleLoginCancel}
+            //         className="w-full bg-gray-300 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition duration-300"
+            //       >
+            //         Cancel
+            //       </button>
+            //     </div>
+            //   </div>
+            // </div>
           )}
 
-          <ToastContainer /> 
+          
         </div>
       )}
     </div>
