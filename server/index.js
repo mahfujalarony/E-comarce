@@ -37,7 +37,7 @@ const connectToDatabase = async () => {
   }
 };
 
-// Serverless function handler
+
 const handler = async (req, res) => {
   try {
     await connectToDatabase();
@@ -47,7 +47,7 @@ const handler = async (req, res) => {
   }
 };
 
-// Start server if not in production (for local development)
+
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 5000;
   const startServer = async () => {

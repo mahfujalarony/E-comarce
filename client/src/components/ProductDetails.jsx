@@ -21,7 +21,7 @@ const ProductDetails = () => {
   const observerRefs = useRef({});
   const { user } = useContext(AuthContext); 
   const userId = user?._id || JSON.parse(localStorage.getItem("user"))?._id || "";
-  const API_URL = 'https://e-comarce-8gj0.onrender.com';
+  const API_URL = 'https://e-comarce-theta.vercel.app';
 
   useEffect(() => {
     const fetchData = async () => {

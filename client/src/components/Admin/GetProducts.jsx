@@ -7,7 +7,7 @@ const ProductList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("https://e-comarce-8gj0.onrender.com/api/products");
+        const response = await axios.get("https://e-comarce-theta.vercel.app/api/products");
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:");
@@ -31,7 +31,7 @@ const ProductList = () => {
            
             {product.images && product.images.length > 0 && (
               <img
-                src={`https://e-comarce-8gj0.onrender.com/uploads/products/${product.images[0].split("/").pop()}`}
+                src={`https://e-comarce-theta.vercel.app/uploads/products/${product.images[0].split("/").pop()}`}
                 alt={product.name}
                 className="w-full h-48 object-cover"
               />

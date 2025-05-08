@@ -12,7 +12,7 @@ const UserList = () => {
     const fetchUsers = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("https://e-comarce-8gj0.onrender.com/api/users", {
+        const response = await axios.get("https://e-comarce-theta.vercel.app/api/users", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setUsers(response.data);
@@ -34,7 +34,7 @@ const UserList = () => {
     setIsLoading(true); 
     try {
       await axios.put(
-        "https://e-comarce-8gj0.onrender.com/api/users/make-admin",
+        "https://e-comarce-theta.vercel.app/api/users/make-admin",
         { email },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -61,7 +61,7 @@ const UserList = () => {
     setIsLoading(true);
     try {
       await axios.put(
-        "https://e-comarce-8gj0.onrender.com/api/users/remove-admin",
+        "https://e-comarce-theta.vercel.app/api/users/remove-admin",
         { email },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -88,7 +88,7 @@ const UserList = () => {
     }
     setIsLoading(true);
     try {
-      await axios.delete("https://e-comarce-8gj0.onrender.com/api/users/delete-user", {
+      await axios.delete("https://e-comarce-theta.vercel.app/api/users/delete-user", {
         data: { email },
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });

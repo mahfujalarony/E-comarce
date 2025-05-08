@@ -40,7 +40,7 @@ const Register = () => {
     data.append('photo', formData.photo);
 
     try {
-      const response = await axios.post('https://e-comarce-8gj0.onrender.com/api/auth/register', data);
+      const response = await axios.post('https://e-comarce-theta.vercel.app/api/auth/register', data);
      //const response = await axios.post('http://localhost:5000/api/auth/register', data);
       console.log(response.data);
       login(response.data.user, response.data.token);

@@ -12,7 +12,7 @@ const RemoveProduct = () => {
   const [totalPages, setTotalPages] = useState(1);
   const { user } = useContext(AuthContext);
 //  const API_URL = 'http://localhost:3001'; 
-  const API_URL = 'https://e-comarce-8gj0.onrender.com'
+  const API_URL = 'https://e-comarce-theta.vercel.app'
   const PRODUCTS_PER_PAGE = 10;
 
   const isAdmin = user?.role === 'admin';

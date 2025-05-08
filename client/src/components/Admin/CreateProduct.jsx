@@ -61,7 +61,7 @@ const CreateProduct = () => {
             });
 
             const response = await axios.post(
-                "https://e-comarce-8gj0.onrender.com/api/products",
+                "https://e-comarce-theta.vercel.app/api/products",
                 formData,
                 {
                     headers: { "Content-Type": "multipart/form-data" },

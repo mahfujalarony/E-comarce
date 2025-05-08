@@ -13,7 +13,7 @@ const useAuth = () => {
       }
 
       try {
-        const response = await fetch('https://e-comarce-8gj0.onrender.com/api/auth/verify-token', {
+        const response = await fetch('https://e-comarce-theta.vercel.app/api/auth/verify-token', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

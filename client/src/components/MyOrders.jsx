@@ -14,7 +14,7 @@ const MyOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('https://e-comarce-8gj0.onrender.com/api/myOrders', {
+        const response = await axios.get('https://e-comarce-theta.vercel.app/api/myOrders', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOrders(response.data);
@@ -33,7 +33,7 @@ const MyOrders = () => {
     setIsLoading(true); 
     try {
       await axios.put(
-        `https://e-comarce-8gj0.onrender.com/api/myOrders/${orderId}`,
+        `https://e-comarce-theta.vercel.app/api/myOrders/${orderId}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
