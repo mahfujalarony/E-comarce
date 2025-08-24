@@ -12,7 +12,7 @@ Since MEGA provides encrypted storage, I first fetch the data from the backend a
 - ✅ User registration and login
 - ✅ View available products
 - ✅ Add products to the cart
-- ✅ Place orders
+- ✅ Place Orders
 
 ### Admin Features:
 - ✅ Default Admin Creation (if no admin exists)
@@ -85,4 +85,5 @@ Check out the live version of this project on **Netlify**:
    MONGO_URI=your_mongoDB_connection_string
    JWT_SECRET=your_secret_key
    ```
+
 
